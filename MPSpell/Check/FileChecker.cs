@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MPSpell.Extensions;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -25,7 +26,7 @@ namespace MPSpell.Check
 
             // doresit kodovani respektive detekci
             uint currentPos = 0;
-            using (StreamReader sr = new StreamReader(file, true))
+            using (StreamReader sr = EncodingDetector.GetStreamWithEncoding(file))
             {                
                 string word = "";
                 char? lastChar = null;                
