@@ -11,11 +11,13 @@ namespace MPSpell.Correction
     public class Corrector
     {
 
-        private IWordGenerator generator;        
+        private IErrorModel generator;
+        private ILanguageModel languageModel;
 
-        public Corrector(IWordGenerator wordGenerator)
+        public Corrector(IErrorModel errorModel, ILanguageModel languageModel)
         {
-            this.generator = wordGenerator;            
+            this.generator = errorModel;
+            this.languageModel = languageModel;
         }
 
         public void Correct(Ngram ngram)

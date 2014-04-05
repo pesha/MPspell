@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace MPSpell.Correction
 {
-    public class ErrorModel : IWordGenerator
+    public class ErrorModel : IErrorModel
     {
 
         private string[] alphabet;
@@ -22,22 +22,25 @@ namespace MPSpell.Correction
         private double CalculateProbability(EditOperation operation, char x, char y)
         {
             double output = 0;
+            string fr;
             switch (operation)
             {
                 case EditOperation.Insertion:
-
+                    output = (double) dictionary.GetConfusionFrequency(x,y, EditOperation.Insertion) / dictionary.GetOneCharFrequency(x.ToString());
                     break;
 
                 case EditOperation.Deletion:
-
+                    fr = x.ToString() + y.ToString();
+                    output = (double) dictionary.GetConfusionFrequency(x, y, EditOperation.Deletion) / dictionary.GetTwoCharFrequency(fr);
                     break;
 
                 case EditOperation.Substitution:
-
+                    output = (double) dictionary.GetConfusionFrequency(x, y, EditOperation.Substitution) / dictionary.GetOneCharFrequency(y.ToString());
                     break;
 
                 case EditOperation.Transposition:
-
+                    fr = x.ToString() + y.ToString();                    
+                    output = (double) dictionary.GetConfusionFrequency(x, y, EditOperation.Transposition) / dictionary.GetTwoCharFrequency(fr);
                     break;
 
             }
@@ -57,7 +60,15 @@ namespace MPSpell.Correction
                     string edited = String.Copy(word).Remove(i, 1).Insert(i, charItem);
                     if (dictionary.FindWord(edited))
                     {
-                        result.Add(edited, this.CalculateProbability(EditOperation.Substitution,word[i],charItem[0]));
+                        double prop = this.CalculateProbability(EditOperation.Substitution, word[i], charItem[0]);
+                        if (!result.ContainsKey(edited))
+                        {
+                            result.Add(edited, prop);
+                        }
+                        else if (prop > result[edited])
+                        {
+                            result[edited] = prop;
+                        }
                     }
                 }
             }
@@ -69,7 +80,15 @@ namespace MPSpell.Correction
                 if (dictionary.FindWord(edited))
                 {
                     char prev = (i - 1) < 0 ? '@' : word[i];
-                    result.Add(edited, this.CalculateProbability(EditOperation.Deletion,prev,word[i]));
+                    double prop = this.CalculateProbability(EditOperation.Deletion,prev,word[i]);
+                    if (!result.ContainsKey(edited))
+                    {
+                        result.Add(edited, prop);
+                    }
+                    else if (prop > result[edited])
+                    {
+                        result[edited] = prop;
+                    }
                 }
             }
 
@@ -83,7 +102,15 @@ namespace MPSpell.Correction
                     if (dictionary.FindWord(edited))
                     {
                         char prev = (i - 1) < 0 ? '@' : word[i];
-                        result.Add(edited, this.CalculateProbability(EditOperation.Insertion, prev, item[0]));
+                        double prop = this.CalculateProbability(EditOperation.Insertion, prev, item[0]);
+                        if (!result.ContainsKey(edited))
+                        {
+                            result.Add(edited, prop);
+                        }
+                        else if (prop > result[edited])
+                        {
+                            result[edited] = prop;
+                        }
                     }
                 }
             }
@@ -97,7 +124,15 @@ namespace MPSpell.Correction
                 string edited = newString.Remove(i, 1).Insert(i + 1, charItem);
                 if (dictionary.FindWord(edited))
                 {
-                    result.Add(edited, this.CalculateProbability(EditOperation.Transposition,word[i],word[i+1]));
+                    double prop = this.CalculateProbability(EditOperation.Transposition, word[i], word[i + 1]);
+                    if (!result.ContainsKey(edited))
+                    {
+                        result.Add(edited, prop);
+                    }
+                    else if(prop > result[edited]) 
+                    {
+                        result[edited] = prop;
+                    }
                 }
             }
 

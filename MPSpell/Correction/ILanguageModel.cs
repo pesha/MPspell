@@ -6,10 +6,7 @@ using System.Threading.Tasks;
 
 namespace MPSpell.Correction
 {
-    public interface IErrorModel
+    public interface ILanguageModel
     {
-
-        Dictionary<string, double> GeneratePossibleWords(string word);
-
     }
 }

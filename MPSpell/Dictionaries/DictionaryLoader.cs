@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using MPSpell.Dictionaries.Affixes;
 using MPSpell.Dictionaries.Parsers;
 using MPSpell.Extensions;
+using MPSpell.Correction;
 
 namespace MPSpell.Dictionaries
 {
@@ -72,9 +73,34 @@ namespace MPSpell.Dictionaries
                 if (null != file)
                 {
                     ConfusionMatrix matrix = this.matrixParser.ParseMatrix(file);
-                    dictionary.AddConfusionMatrix(type, matrix);
+                    dictionary.AddConfusionMatrix(ConvertFileTypeToEditOperation(type), matrix);
                 }
             }
+        }
+
+        private EditOperation ConvertFileTypeToEditOperation(DictionaryFileType type)
+        {
+            EditOperation op = EditOperation.Unknown;
+            switch (type)
+            {
+                case DictionaryFileType.DeletetionsMatrix:
+                    op = EditOperation.Deletion;
+                    break;
+
+                case DictionaryFileType.InsertionsMatrix:
+                    op = EditOperation.Insertion;
+                    break;
+
+                case DictionaryFileType.SubstitutionsMatrix:
+                    op = EditOperation.Substitution;
+                    break;
+
+                case DictionaryFileType.TranspositionsMatrix:
+                    op = EditOperation.Transposition;
+                    break;
+            }
+
+            return op;
         }
 
         internal void ParseFrequences(Dictionary dictionary)

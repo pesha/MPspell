@@ -47,6 +47,7 @@
     <Compile Include="Check\Checker.cs" />
     <Compile Include="Check\FileChecker.cs" />
     <Compile Include="Check\Ngram.cs" />
+    <Compile Include="Correction\ILanguageModel.cs" />
     <Compile Include="Correction\LanguageModel.cs" />
     <Compile Include="Dictionaries\ConfusionMatrix.cs" />
     <Compile Include="Correction\Corrector.cs" />
@@ -71,10 +72,11 @@
     <Compile Include="Extensions\TextFileEncodingDetector.cs" />
     <Compile Include="Tools\BaseCounter.cs" />
     <Compile Include="Tools\CorporaReader.cs" />
-    <Compile Include="Tools\CharFrequenceCounter.cs" />
+    <Compile Include="Tools\CharFrequencyCounter.cs" />
     <Compile Include="Tools\ICorporaOutputHandler.cs" />
     <Compile Include="Tools\LineParsers\HCLineParser.cs" />
     <Compile Include="Tools\TwoCharFrequencyCounter.cs" />
+    <Compile Include="Tools\WordFrequencyCounter.cs" />
     <Compile Include="Utils.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Dictionaries\Parsers\DefaultAffixFileParser.cs" />

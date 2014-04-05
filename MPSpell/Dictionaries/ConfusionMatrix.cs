@@ -18,6 +18,11 @@ namespace MPSpell.Dictionaries
             EditOperation = operation;
         }
 
+        public int GetValue(char rowKey, char columnKey)
+        {
+            return matrix[rowKey][columnKey];
+        }
+
         public void SetValue(char rowKey, char columnKey, int value)
         {
             if (matrix.ContainsKey(rowKey))

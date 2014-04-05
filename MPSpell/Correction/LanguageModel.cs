@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MPSpell.Correction
 {
-    class LanguageModel
+    public class LanguageModel : ILanguageModel
     {
     }
 }
