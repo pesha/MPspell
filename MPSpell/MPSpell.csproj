@@ -59,7 +59,9 @@
     <Compile Include="Dictionaries\Affixes\Misc.cs" />
     <Compile Include="Dictionaries\Affixes\Rule.cs" />
     <Compile Include="Dictionaries\DictionaryLoader.cs" />
+    <Compile Include="Dictionaries\FrequencyVector.cs" />
     <Compile Include="Dictionaries\Parsers\ConfusionMatrixParser.cs" />
+    <Compile Include="Dictionaries\Parsers\FrequencyVectorParser.cs" />
     <Compile Include="Dictionaries\Parsers\IConfusionMatrixParser.cs" />
     <Compile Include="Extensions\OpenOfficeDictionary.cs" />
     <Compile Include="Dictionaries\Parsers\DefaultDictionaryFileParser.cs" />
