@@ -13,7 +13,7 @@ namespace MPSpell.Check
     {
 
         
-        public FileChecker(MPSpell.Dictionary.Dictionary dict)
+        public FileChecker(MPSpell.Dictionaries.Dictionary dict)
             : base(dict)
         {
         }

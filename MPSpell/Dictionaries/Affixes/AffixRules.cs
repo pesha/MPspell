@@ -1,11 +1,11 @@
-﻿using MPSpell.Dictionary.Parsers;
+﻿using MPSpell.Dictionaries.Parsers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MPSpell.Dictionary.Affixes
+namespace MPSpell.Dictionaries.Affixes
 {
 
     public class AffixRules

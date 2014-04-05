@@ -1,4 +1,4 @@
-﻿using MPSpell.Dictionary.Affixes;
+﻿using MPSpell.Dictionaries.Affixes;
 using System;
 using System.Collections.Generic;
 using System.Linq;

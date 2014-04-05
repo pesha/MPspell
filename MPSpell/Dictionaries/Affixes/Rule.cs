@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MPSpell.Dictionary.Affixes
+namespace MPSpell.Dictionaries.Affixes
 {
 
     public class Rule : List<RuleItem>

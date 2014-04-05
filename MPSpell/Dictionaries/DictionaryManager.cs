@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MPSpell.Dictionary
+namespace MPSpell.Dictionaries
 {
 
     public class DictionaryManager
@@ -54,6 +54,10 @@ namespace MPSpell.Dictionary
 
                     case ".aff":
                         dictionary.SuffixFileName = file.Name;
+                        break;
+
+                    case ".mtr":
+                        dictionary.ConfusionMatrixesFiles.Add(file.Name);
                         break;
 
                     default:

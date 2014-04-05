@@ -9,9 +9,9 @@ namespace MPSpell.Check
     public class Checker
     {
 
-        private MPSpell.Dictionary.Dictionary dictionary;
+        private MPSpell.Dictionaries.Dictionary dictionary;
 
-        public Checker(MPSpell.Dictionary.Dictionary dict)
+        public Checker(MPSpell.Dictionaries.Dictionary dict)
         {
             dictionary = dict;
         }

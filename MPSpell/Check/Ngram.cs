@@ -35,6 +35,11 @@ namespace MPSpell.Check
             return res;
         }
 
+        public string GetLastWord()
+        {
+            return history.Last();
+        }
+
     }
 
 }

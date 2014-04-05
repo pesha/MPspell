@@ -2,7 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MPSpell;
 using System.Collections.Generic;
-using MPSpell.Dictionary.Affixes;
+using MPSpell.Dictionaries.Affixes;
 
 namespace MPSpellTests
 {

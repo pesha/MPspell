@@ -1,4 +1,4 @@
-﻿using MPSpell.Dictionary.Affixes;
+﻿using MPSpell.Dictionaries.Affixes;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 
-namespace MPSpell.Dictionary.Parsers
+namespace MPSpell.Dictionaries.Parsers
 {
 
 
