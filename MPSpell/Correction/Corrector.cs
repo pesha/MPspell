@@ -20,12 +20,35 @@ namespace MPSpell.Correction
             this.languageModel = languageModel;
         }
 
-        public void Correct(Ngram ngram)
+        public void Correct(MisspelledWord misspelling)
         {
-            Dictionary<string, double> candidates = this.generator.GeneratePossibleWords(ngram.GetLastWord());            
-            
-   
+            Dictionary<string, double> candidates = this.generator.GeneratePossibleWords(misspelling.GetWrongWord());
 
+            string word;
+            if (candidates.Count > 1)
+            {
+                Dictionary<string, double> probabilities = this.languageModel.EvaluateCandidates(misspelling, candidates);
+                foreach (KeyValuePair<string, double> option in candidates)
+                {
+                    probabilities[option.Key] *= option.Value;
+                }
+
+                double? max = null;
+                foreach (KeyValuePair<string, double> pair in probabilities)
+                {
+                    if (null == max || pair.Value > max)
+                    {
+                        max = pair.Value;
+                        word = pair.Key;
+                    }
+                }
+
+            }
+            else
+            {
+                word = candidates.First().Key;
+            }            
+            
         }
 
     }

@@ -6,36 +6,35 @@ using System.Threading.Tasks;
 
 namespace MPSpell.Check
 {
-    public class Checker
+    abstract public class Checker
     {
 
-        private MPSpell.Dictionaries.Dictionary dictionary;
+        protected MPSpell.Dictionaries.Dictionary dictionary;
 
         public Checker(MPSpell.Dictionaries.Dictionary dict)
         {
             dictionary = dict;
         }
 
-        public bool CheckWord(string word)
-        {            
-            string wordLowerCase = word.ToLowerInvariant();
-            bool found = false;
-            foreach (string token in dictionary)
-            {
-                if (token == word || token == wordLowerCase)
-                {
-                    found = true;
-                    break;
-                }
-            }
-
-            return found;
-        }
-
         protected string TrimSpecialChars(string word)
         {
             // nutno predelat do regularu kvuli opakovane aplikaci
-            return word.Trim(new char[] { '„', '.', ',', '”', ':' });
+            return word.Trim(new char[] { '„', ',', '”', '\'', ':' });
+        }
+
+        protected bool HasSentenceEnded(char chr)
+        {
+            bool end = false;
+            switch (chr)
+            {
+                case '.':
+                case '?':
+                case '!':
+                    end = true;
+                    break;
+            }
+
+            return end;
         }
 
 

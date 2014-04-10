@@ -17,13 +17,20 @@ namespace MPSpell.Dictionaries
         private IAffixFileParser affixParser;
         private IConfusionMatrixParser matrixParser;
         private FrequencyVectorParser frequencyParser;
+        private NgramParser ngramParser;
 
-        public DictionaryLoader(IDictionaryFileParser parser, IAffixFileParser affixParser = null, IConfusionMatrixParser matrixParser = null, FrequencyVectorParser freqParser = null)
+        public DictionaryLoader(
+            IDictionaryFileParser parser,
+            IAffixFileParser affixParser = null,
+            IConfusionMatrixParser matrixParser = null,
+            FrequencyVectorParser freqParser = null,
+            NgramParser ngramParser = null)
         {
             this.parser = parser;
             this.affixParser = affixParser;
             this.matrixParser = matrixParser;
             this.frequencyParser = freqParser;
+            this.ngramParser = ngramParser;
         }
 
         internal void ParseDictionary(Dictionary dictionary)
@@ -106,10 +113,48 @@ namespace MPSpell.Dictionaries
         internal void ParseFrequences(Dictionary dictionary)
         {
             FrequencyVector<string> oneChrFrq = this.frequencyParser.ParseFrequency(dictionary.GetFile(DictionaryFileType.OneCharFrequences));
-            dictionary.AddFrequencyVector(DictionaryFileType.OneCharFrequences, oneChrFrq);
+            dictionary.AddFrequencyVector(FrequencyVectorType.OneChar, oneChrFrq);
 
             FrequencyVector<string> twoChrFrq = this.frequencyParser.ParseFrequency(dictionary.GetFile(DictionaryFileType.TwoCharFrequences));
-            dictionary.AddFrequencyVector(DictionaryFileType.TwoCharFrequences, twoChrFrq);
+            dictionary.AddFrequencyVector(FrequencyVectorType.TwoChar, twoChrFrq);
+        }
+
+        internal void ParseNgrams(Dictionary dictionary)
+        {
+            DictionaryFileType[] files = new DictionaryFileType[]
+            {
+                DictionaryFileType.UnigramFrequences,
+                DictionaryFileType.DigramFrequences,
+                DictionaryFileType.TrigramFrequences
+            };
+
+            foreach (DictionaryFileType type in files)
+            {
+                string file = dictionary.GetFile(type);
+
+                if (null != file)
+                {
+                    NgramCollection collection = this.ngramParser.ParseNgrams(file);
+                    NgramType ngramType;
+                    switch (type)
+                    {
+                        case DictionaryFileType.DigramFrequences:
+                            ngramType = NgramType.Digram;
+                            break;
+
+                        case DictionaryFileType.TrigramFrequences:
+                            ngramType = NgramType.Trigram;
+                            break;
+
+                        default:
+                            ngramType = NgramType.Unigram;
+                            break;
+                    }
+
+
+                    dictionary.AddNgramCollection(ngramType, collection);
+                }
+            }
         }
 
     }

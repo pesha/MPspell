@@ -1,7 +1,10 @@
 ﻿using MPSpell;
-using MPSpell.Dictionary;
-using MPSpell.Dictionary.Parsers;
+using MPSpell.Correction;
+using MPSpell.Dictionaries;
+using MPSpell.Dictionaries.Parsers;
+using MPSpell.Extensions;
 using MPSpell.Check;
+using MPSpell.Tools;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,17 +18,41 @@ namespace SpellCheckerConsole
         static void Main(string[] args)
         {
 
-            DictionaryBuilder builder = new DictionaryBuilder(
-                new DefaultDictionaryFileParser(),
-                new DefaultAffixFileParser()
-            );
+            //NgramParser parser = new NgramParser();
+            //parser.ParseNgrams("w2_.txt");
 
-            //var dictionary = builder.BuildDictionary("dictionaries/en_US/en_US.dic", "dictionaries/en_US/en_US.aff");
-            var dictionary = builder.BuildDictionary("dictionaries/cs_CZ/cs_CZ.dic", "dictionaries/cs_CZ/cs_CZ.aff");
+            
+            //TwoCharFrequencyCounter counter = new TwoCharFrequencyCounter(Dictionary.GetAlphabetStatic());
+            //WordFrequencyCounter counter = new WordFrequencyCounter();
+            //CorporaReader reader = new CorporaReader(new HCLineParser(), counter);
+            //reader.ProcessFile("eng_news.txt");
+            //counter.Save("word_freq.txt");
+            
 
 
-            FileChecker checker = new FileChecker(dictionary);
-            var output = checker.CheckFile("test.txt");
+            DictionaryManager manager = new DictionaryManager("dictionaries");            
+            Dictionary enUs = manager.GetDictionary("en_US");
+
+            enUs.PreloadDictionaries();
+            
+           // Window window = new Window();
+           // window.Add("blue");
+           // window.Add("acr");
+
+
+
+            Corrector corrector = new Corrector(new ErrorModel(enUs), new LanguageModel(enUs));
+            
+
+
+
+            FileChecker checker = new FileChecker(enUs);
+            List<MisspelledWord> output = checker.CheckFile("testen.txt");
+
+            foreach (MisspelledWord error in output)
+            {
+                corrector.Correct(error);
+            }
 
 
         }

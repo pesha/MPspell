@@ -16,7 +16,8 @@ namespace MPSpell.Dictionaries
         private string path;
         private Dictionary<DictionaryFileType, string> files = new Dictionary<DictionaryFileType, string>();
         private Dictionary<EditOperation, ConfusionMatrix> matrixes = new Dictionary<EditOperation, ConfusionMatrix>();
-        private Dictionary<DictionaryFileType, FrequencyVector<string>> frequences = new Dictionary<DictionaryFileType, FrequencyVector<string>>();
+        private Dictionary<FrequencyVectorType, FrequencyVector<string>> frequences = new Dictionary<FrequencyVectorType, FrequencyVector<string>>();
+        private Dictionary<NgramType, NgramCollection> ngrams = new Dictionary<NgramType, NgramCollection>();
         private DictionaryLoader loader;
 
         public Dictionary(DictionaryLoader loader, string name, string path)
@@ -63,12 +64,17 @@ namespace MPSpell.Dictionaries
 
         public int GetOneCharFrequency(string str)
         {
-            return this.frequences[DictionaryFileType.OneCharFrequences][str];
+            return this.frequences[FrequencyVectorType.OneChar][str];
         }
 
         public int GetTwoCharFrequency(string str)
         {
-            return this.frequences[DictionaryFileType.TwoCharFrequences][str];
+            return this.frequences[FrequencyVectorType.TwoChar][str];
+        }
+
+        public NgramCollection GetNgramCollection(NgramType type)
+        {
+            return this.ngrams[type];
         }
 
         internal void AddConfusionMatrix(EditOperation operation, ConfusionMatrix matrix)
@@ -76,10 +82,16 @@ namespace MPSpell.Dictionaries
             matrixes.Add(operation, matrix);
         }
 
-        internal void AddFrequencyVector(DictionaryFileType type, FrequencyVector<string> vector)
+        internal void AddFrequencyVector(FrequencyVectorType type, FrequencyVector<string> vector)
         {
             frequences.Add(type, vector);
         }
+
+        internal void AddNgramCollection(NgramType type, NgramCollection collection)
+        {
+            ngrams.Add(type, collection);
+        }
+
 
         // @todo refactor
         public void PreloadDictionaries()
@@ -87,6 +99,7 @@ namespace MPSpell.Dictionaries
             this.loader.ParseDictionary(this);
             this.loader.ParseConfusionMatrixes(this);
             this.loader.ParseFrequences(this);
+            this.loader.ParseNgrams(this);
         }
 
     }
@@ -102,6 +115,9 @@ namespace MPSpell.Dictionaries
         InsertionsMatrix,
         SubstitutionsMatrix,
         TranspositionsMatrix,
+        UnigramFrequences,
+        DigramFrequences,
+        TrigramFrequences,
         Unknown
     }
 

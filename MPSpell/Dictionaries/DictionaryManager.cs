@@ -119,6 +119,18 @@ namespace MPSpell.Dictionaries
                         case "SubstitutionsMatrix":
                             type = DictionaryFileType.SubstitutionsMatrix;
                             break;
+
+                        case "UnigramFrequences":
+                            type = DictionaryFileType.UnigramFrequences;
+                            break;
+
+                        case "DigramFrequences":
+                            type = DictionaryFileType.DigramFrequences;
+                            break;
+
+                        case "TrigramFrequences":
+                            type = DictionaryFileType.TrigramFrequences;
+                            break;
                     }
 
                     dictionary.AddFile(type, file.InnerText.Trim());
@@ -135,7 +147,8 @@ namespace MPSpell.Dictionaries
                 new DefaultDictionaryFileParser(),
                 new DefaultAffixFileParser(),
                 new ConfusionMatrixParser(),
-                new FrequencyVectorParser()
+                new FrequencyVectorParser(),
+                new NgramParser()
             );
 
             return loader;

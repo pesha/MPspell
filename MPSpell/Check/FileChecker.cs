@@ -1,5 +1,7 @@
-﻿using MPSpell.Extensions;
+﻿using MPSpell.Dictionaries;
+using MPSpell.Extensions;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -18,44 +20,75 @@ namespace MPSpell.Check
         {
         }
 
-        public List<Ngram> CheckFile(string file)
+        public List<MisspelledWord> CheckFile(string file)
         {
-            List<Ngram> misspelledWords = new List<Ngram>();
+            List<MisspelledWord> misspelledWords = new List<MisspelledWord>();
 
-            Ngram ngram = new Ngram();            
+            Window window = new Window();            
 
-            // doresit kodovani respektive detekci
             uint currentPos = 0;
             using (StreamReader sr = EncodingDetector.GetStreamWithEncoding(file))
             {                
-                string word = "";
-                char? lastChar = null;                
+                string word = String.Empty;                
                 while(!sr.EndOfStream){
                     char chr = (char) sr.Read();
                     currentPos++;
-                                       
-                    lastChar = chr;
-                    if (lastChar == '\r' || lastChar == '\n')
+
+                    switch (chr)
                     {
-                        chr = ' ';
+                        case '\r':
+                        case '\n':
+                        case '.':
+                        case '?':
+                        case '!':
+                        case ' ':
+                            WindowItem token = null;
+                            if (String.Empty != word)
+                            {
+                                string pureWord = this.TrimSpecialChars(word.ToLowerInvariant());
+                                if (string.Empty == pureWord)
+                                {
+                                    word = String.Empty;
+                                    break;
+                                }
+
+                                if (!this.dictionary.FindWord(pureWord))
+                                {
+                                    token = new WindowItem(pureWord, word, currentPos);                                    
+                                }
+                                else
+                                {
+                                    token = new WindowItem(pureWord);
+                                }
+
+ 
+                                word = String.Empty;
+                            }
+
+                            if (this.HasSentenceEnded(chr))
+                            {
+                                token = new WindowItem(chr, true);
+                            }
+
+                            if (null != token)
+                            {
+                                window.Add(token);
+                                MisspelledWord error = window.GetMisspelledWord();
+                                if (null != error)
+                                {
+                                    misspelledWords.Add(error);
+                                }
+                            }
+
+                            break;
+
+                        default:
+                            word += chr;
+                            break;
+
                     }
 
-                    if (' ' != chr)
-                    {
-                        word += chr;                        
-                    }
-                    else if (word != "")
-                    {                                         
-                        string trimedWord = this.TrimSpecialChars(word);
-                        ngram.Add(trimedWord);
-                        bool res = this.CheckWord(trimedWord);
-                        if (!res)
-                        {
-                            Ngram error = ngram.DeepCopy(word, currentPos);                            
-                            misspelledWords.Add(error);
-                        }
-                        word = "";
-                    }
+
                 }
             }
 
