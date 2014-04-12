@@ -22,10 +22,25 @@ namespace MPSpell.Check
         {
             get
             {
-                return this.context[this.errorPosition].RawWord;
+                return WordContext[0] + WordContext[1] + WordContext[2];
             }
         }
-        public string CorrectWord { get; set; }        
+        public string CorrectWord { get; set; }
+        public string CorrectWordWithContext
+        {
+            get
+            {
+                return WordContext[0] + CorrectWord + WordContext[2];
+            }
+        }
+        public string[] WordContext
+        {
+            get
+            {
+                return this.context[this.errorPosition].WordContext;
+            }
+        }
+
 
         public MisspelledWord(IEnumerable<Token> collection, int errorPos)
         {
@@ -33,9 +48,9 @@ namespace MPSpell.Check
             errorPosition = errorPos;
         }
 
-        public uint GetPosition()
+        public int GetPosition()
         {
-            return (uint) this.context[errorPosition].Position;
+            return (int) this.context[errorPosition].Position;
         }
 
         public Token GetWrongWindowItem()

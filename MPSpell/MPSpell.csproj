@@ -49,10 +49,9 @@
     <Compile Include="Check\Tokenizer.cs" />
     <Compile Include="Check\FileChecker.cs" />
     <Compile Include="Check\MisspelledWord.cs" />
-    <Compile Include="Check\MultipleFilesChecker.cs" />
     <Compile Include="Check\Window.cs" />
     <Compile Include="Check\Token.cs" />
-    <Compile Include="Correction\FileCorrector.cs" />
+    <Compile Include="Correction\FileCorrectionHandler.cs" />
     <Compile Include="Correction\ILanguageModel.cs" />
     <Compile Include="Correction\LanguageModel.cs" />
     <Compile Include="Dictionaries\IDictionary.cs" />

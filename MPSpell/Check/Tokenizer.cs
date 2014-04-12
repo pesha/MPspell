@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace MPSpell.Check
@@ -14,9 +15,10 @@ namespace MPSpell.Check
 
         protected string word = string.Empty;
         protected Window window = new Window();
-        protected uint lastStart = 0;
-        protected uint currentPos = 0;
+        protected int lastStart = 0;
+        protected int currentPos = 0;
 
+        private Regex rg = new Regex(@"(\W*)([a-z]*)(\W*)", RegexOptions.Compiled);
 
         public Tokenizer(IDictionary dict)
         {
@@ -47,8 +49,8 @@ namespace MPSpell.Check
                         Token token = null;
                         if (String.Empty != word)
                         {
-                            string pureWord = this.TrimSpecialChars(word.ToLowerInvariant());
-                            if (string.Empty == pureWord)
+                            string[] wordContext = this.TrimSpecialChars(word.ToLowerInvariant());
+                            if (string.Empty == wordContext[1])
                             {
                                 word = String.Empty;
                                 break;
@@ -56,13 +58,13 @@ namespace MPSpell.Check
 
                             bool context = this.HasContextEnded(chr) ? true : false;
 
-                            if (!this.dictionary.FindWord(pureWord))
+                            if (!this.dictionary.FindWord(wordContext[1]))
                             {
-                                token = new Token(pureWord, context, word, lastStart);
+                                token = new Token(wordContext[1], context, wordContext, lastStart);
                             }
                             else
                             {
-                                token = new Token(pureWord, context);
+                                token = new Token(wordContext[1], context);
                             }
 
                             word = String.Empty;
@@ -89,11 +91,17 @@ namespace MPSpell.Check
             return misspelling;
         }
 
-        protected string TrimSpecialChars(string word)
+        protected string[] TrimSpecialChars(string word)
         {
             // nutno predelat do regularu kvuli opakovane aplikaci
-            return word.Trim(new char[] { '„', ',', '”', '\'', ':' });
-        }
+            //return word.Trim(new char[] { '„', ',', '”', '\'', ':' });
+
+            return new string[] {
+                rg.Match(word).Groups[1].Value,    
+                rg.Match(word).Groups[2].Value,
+                rg.Match(word).Groups[3].Value
+            }; ;
+       } 
 
         protected bool HasContextEnded(char chr)
         {

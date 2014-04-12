@@ -6,6 +6,7 @@ using MPSpell.Dictionaries.Affixes;
 using MPSpell.Extensions;
 using MPSpell.Check;
 using MPSpell.Dictionaries;
+using System.Text.RegularExpressions;
 
 namespace MPSpellTests
 {
@@ -49,10 +50,12 @@ namespace MPSpellTests
                 }
             }
 
-            Assert.AreEqual((uint)8, mistakes[0].GetPosition());
-            Assert.AreEqual((uint)14, mistakes[1].GetPosition());
+            Assert.AreEqual(8, mistakes[0].GetPosition());
+            Assert.AreEqual(14, mistakes[1].GetPosition());
 
-            Assert.AreEqual("'detection'", mistakes[1].RawWord);
+            Assert.AreEqual("'", mistakes[1].WordContext[0]);
+            Assert.AreEqual("'", mistakes[1].WordContext[2]);
+            Assert.AreEqual("'detection'", mistakes[1].RawWord);                
 
             List<string> errors = new List<string>();
             foreach (MisspelledWord word in mistakes)
@@ -63,8 +66,6 @@ namespace MPSpellTests
             List<string> testErrors = new List<string>() { "error", "detection" };
             CollectionAssert.AreEqual(testErrors, errors);            
         }
-
-
 
     }
 }

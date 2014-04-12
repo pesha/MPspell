@@ -18,7 +18,7 @@ namespace MPSpellTests
             Window window = new Window();
             window.Add(new Token("i"));
             window.Add(new Token("was"));
-            window.Add(new Token("ona", false, "ona", 7));
+            window.Add(new Token("ona", false, new string[] { "", "ona", "" }, 7));
             window.Add(new Token("holiday"));
             window.Add(new Token('.', true));
             MisspelledWord word = window.GetMisspelledWord();
@@ -45,7 +45,7 @@ namespace MPSpellTests
             window.Add(new Token("test"));
             window.Add(new Token("test"));
             window.Add(new Token("test"));
-            window.Add(new Token("testa", false, "testa", 10));
+            window.Add(new Token("testa", false, new string[] { "", "testa", "" }, 10));
             window.Add(new Token("test"));
 
             word = window.GetMisspelledWord();
