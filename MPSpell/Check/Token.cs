@@ -6,25 +6,26 @@ using System.Threading.Tasks;
 
 namespace MPSpell.Check
 {
-    public class WindowItem
+    public class Token
     {
 
         public string Word { get; private set; }
         public string RawWord { get; private set; }
         public uint? Position { get; private set; }
-        public bool SentenceEnd { get; private set; }
+        public bool ContextEnd { get; private set; }
 
-        public WindowItem(string word, string rawWord = null, uint? position = null)
+        public Token(string word, bool contextEnd = false, string rawWord = null, uint? position = null)
         {
             Word = word;
             RawWord = rawWord;
             Position = position;
+            ContextEnd = contextEnd;
         }
 
-        public WindowItem(char end, bool sentenceEnd = true)
+        public Token(char end, bool contextEnd = true)
         {
             Word = end.ToString();
-            SentenceEnd = sentenceEnd;
+            ContextEnd = contextEnd;
         }
 
 

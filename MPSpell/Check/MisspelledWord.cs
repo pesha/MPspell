@@ -10,25 +10,27 @@ namespace MPSpell.Check
     {
 
         private int errorPosition;
-        private List<WindowItem> context;
-
-        public MisspelledWord(IEnumerable<WindowItem> collection, int errorPos)
+        private List<Token> context;
+        public string WrongWord
         {
-            context = new List<WindowItem>(collection);
+            get
+            {
+                return this.context[this.errorPosition].Word;
+            }
+        }
+
+        public MisspelledWord(IEnumerable<Token> collection, int errorPos)
+        {
+            context = new List<Token>(collection);
             errorPosition = errorPos;
         }
 
-        public WindowItem GetWrongWindowItem()
+        public Token GetWrongWindowItem()
         {
             return this.context[this.errorPosition];
         }
 
-        public string GetWrongWord()
-        {
-            return this.context[this.errorPosition].Word;
-        }
-
-        public List<string> GetLeftContext(int limit = 3)
+        public List<string> GetLeftContext(int limit = 2)
         {
             List<string> leftContext = new List<string>();
 
@@ -39,35 +41,34 @@ namespace MPSpell.Check
             }
             for (int i = start; i <= this.errorPosition; i++)
             {
-                if (this.context[i].SentenceEnd)
+                if (this.context[i].ContextEnd)
                 {
-                    leftContext = new List<string>();
+                    leftContext = new List<string>();                    
                 }
 
-                leftContext.Add(this.context[i].Word);                                    
+                leftContext.Add(this.context[i].Word);
             }
 
             return leftContext;
         }
 
-        public List<string> GetRightContext(int limit = 3)
+        public List<string> GetRightContext(int limit = 2)
         {
             List<string> rightContext = new List<string>();
 
             int end = this.errorPosition + limit;
-            if (this.context.Count < end)
+            if (this.context.Count < (end + 1))
             {
                 end = rightContext.Count;
             }
 
             for (int i = this.errorPosition; i < end; i++)
             {
-                if (this.context[i].SentenceEnd)
+                rightContext.Add(this.context[i].Word);
+                if (this.context[i].ContextEnd)
                 {
                     break;
-                }
-
-                rightContext.Add(this.context[i].Word);
+                }                
             }
 
             return rightContext;

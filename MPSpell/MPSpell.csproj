@@ -45,11 +45,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Check\Checker.cs" />
+    <Compile Include="Check\StringChecker.cs" />
+    <Compile Include="Check\Tokenizer.cs" />
     <Compile Include="Check\FileChecker.cs" />
     <Compile Include="Check\MisspelledWord.cs" />
     <Compile Include="Check\MultipleFilesChecker.cs" />
     <Compile Include="Check\Window.cs" />
-    <Compile Include="Check\WindowItem.cs" />
+    <Compile Include="Check\Token.cs" />
     <Compile Include="Correction\ILanguageModel.cs" />
     <Compile Include="Correction\LanguageModel.cs" />
     <Compile Include="Dictionaries\Ngram.cs" />

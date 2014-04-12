@@ -22,7 +22,7 @@ namespace MPSpell.Correction
 
         public void Correct(MisspelledWord misspelling)
         {
-            Dictionary<string, double> candidates = this.generator.GeneratePossibleWords(misspelling.GetWrongWord());
+            Dictionary<string, double> candidates = this.generator.GeneratePossibleWords(misspelling.WrongWord);
 
             string word;
             if (candidates.Count > 1)

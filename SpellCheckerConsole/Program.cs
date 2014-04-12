@@ -34,25 +34,30 @@ namespace SpellCheckerConsole
             Dictionary enUs = manager.GetDictionary("en_US");
 
             enUs.PreloadDictionaries();
-            
-           // Window window = new Window();
-           // window.Add("blue");
-           // window.Add("acr");
-
-
 
             Corrector corrector = new Corrector(new ErrorModel(enUs), new LanguageModel(enUs));
-            
 
 
-
-            FileChecker checker = new FileChecker(enUs);
-            List<MisspelledWord> output = checker.CheckFile("testen.txt");
-
-            foreach (MisspelledWord error in output)
+            /*using (StringChecker checker = new StringChecker("My acr is blue reax.", enUs))
             {
-                corrector.Correct(error);
+                MisspelledWord error;
+
+                while ((error = checker.GetNextMisspelling()) != null)
+                {
+                    var lc = error.GetLeftContext();
+                    var rc = error.GetRightContext();
+                }
+            }*/
+
+            using (FileChecker checker = new FileChecker("testen.txt", enUs))
+            {
+                MisspelledWord error;
+                while ((error = checker.GetNextMisspelling()) != null)
+                {
+                   
+                }
             }
+            
 
 
         }

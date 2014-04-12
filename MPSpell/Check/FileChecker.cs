@@ -11,88 +11,75 @@ using System.Threading.Tasks;
 namespace MPSpell.Check
 {
 
-    public class FileChecker : Checker 
+    public class FileChecker : Checker, IDisposable
     {
 
-        
-        public FileChecker(MPSpell.Dictionaries.Dictionary dict)
-            : base(dict)
+        private StreamReader reader = null;
+        public string Path { get; private set; }
+        public bool EndOfCheck
         {
+            get
+            {
+                return (contextLeft == 0);
+            }
+        }
+        private int contextLeft;
+
+        public FileChecker(string path, Dictionary dictionary, int contextSize = 2)
+            : base(dictionary, contextSize)
+        {
+            Path = path;
+            contextLeft = contextSize;
         }
 
-        public List<MisspelledWord> CheckFile(string file)
+        private void Init()
         {
-            List<MisspelledWord> misspelledWords = new List<MisspelledWord>();
+            Encoding enc = EncodingDetector.DetectEncoding(Path);
+            reader = new StreamReader(Path, enc);
+        }
 
-            Window window = new Window();            
+        public override MisspelledWord GetNextMisspelling()
+        {
+            if (null == reader)
+            {
+                this.Init();
+            }
 
-            uint currentPos = 0;
-            using (StreamReader sr = EncodingDetector.GetStreamWithEncoding(file))
-            {                
-                string word = String.Empty;                
-                while(!sr.EndOfStream){
-                    char chr = (char) sr.Read();
-                    currentPos++;
-
-                    switch (chr)
-                    {
-                        case '\r':
-                        case '\n':
-                        case '.':
-                        case '?':
-                        case '!':
-                        case ' ':
-                            WindowItem token = null;
-                            if (String.Empty != word)
-                            {
-                                string pureWord = this.TrimSpecialChars(word.ToLowerInvariant());
-                                if (string.Empty == pureWord)
-                                {
-                                    word = String.Empty;
-                                    break;
-                                }
-
-                                if (!this.dictionary.FindWord(pureWord))
-                                {
-                                    token = new WindowItem(pureWord, word, currentPos);                                    
-                                }
-                                else
-                                {
-                                    token = new WindowItem(pureWord);
-                                }
-
- 
-                                word = String.Empty;
-                            }
-
-                            if (this.HasSentenceEnded(chr))
-                            {
-                                token = new WindowItem(chr, true);
-                            }
-
-                            if (null != token)
-                            {
-                                window.Add(token);
-                                MisspelledWord error = window.GetMisspelledWord();
-                                if (null != error)
-                                {
-                                    misspelledWords.Add(error);
-                                }
-                            }
-
-                            break;
-
-                        default:
-                            word += chr;
-                            break;
-
-                    }
-
-
+            
+            MisspelledWord misspelling = null;
+            char chr;
+            while (!reader.EndOfStream)
+            {
+                chr = (char) reader.Read();                
+                misspelling = this.tokenizer.HandleChar(chr);
+                if (null != misspelling)
+                {
+                    break;
                 }
             }
 
-            return misspelledWords;
+            if (null == misspelling && contextLeft > 0)
+            {
+                for (int i = contextLeft; i > 0; i--)
+                {
+                    contextLeft--;
+                    misspelling = this.tokenizer.HandleChar('.', true);
+                    if (null != misspelling)
+                    {
+                        break;
+                    }
+                }
+            }
+
+            return misspelling;
+        }
+
+        public void Dispose()
+        {
+            if (null != reader)
+            {
+                reader.Dispose();
+            }
         }
 
     }
