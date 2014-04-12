@@ -32,6 +32,11 @@ namespace MPSpell.Tools
             }
         }
 
+        public Dictionary<T, int> GetFrequences()
+        {
+            return frequences;
+        }
+        
         public void Save(string file)
         {
             using (FileStream stream = new FileStream(file, FileMode.OpenOrCreate, FileAccess.Write))

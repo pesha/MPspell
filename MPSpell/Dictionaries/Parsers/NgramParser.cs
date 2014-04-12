@@ -10,13 +10,11 @@ namespace MPSpell.Dictionaries.Parsers
     {
 
         public static readonly char[] separator = new char[] { '	' };
-        private int NgramCount;
 
 
         public NgramCollection ParseNgrams(string file)
         {
             NgramCollection collection = new NgramCollection();
-            NgramCount = 0;
 
             IEnumerable<string> sequence = base.ParseFile(file);            
             using (var handler = sequence.GetEnumerator())
@@ -27,8 +25,6 @@ namespace MPSpell.Dictionaries.Parsers
                 }
             }
 
-            collection.NgramCount = NgramCount;
-
             return collection;
         }
 
@@ -37,7 +33,6 @@ namespace MPSpell.Dictionaries.Parsers
             string[] parts = line.Split(separator,2);
 
             int count = int.Parse(parts[0]);
-            NgramCount += count;
 
             return new Ngram(parts[1].Split(separator), count);
         }

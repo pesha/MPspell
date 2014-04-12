@@ -9,8 +9,9 @@ using MPSpell.Check;
 namespace MPSpellTests
 {
     [TestClass]
-    public class MisspelledWordTest
+    public class WindowTest
     {
+
         [TestMethod]
         public void ContextTest()
         {
@@ -20,7 +21,6 @@ namespace MPSpellTests
             window.Add(new Token("ona", false, "ona", 7));
             window.Add(new Token("holiday"));
             window.Add(new Token('.', true));
-
             MisspelledWord word = window.GetMisspelledWord();
             Assert.AreEqual("ona", word.WrongWord);
 
@@ -34,5 +34,28 @@ namespace MPSpellTests
 
             CollectionAssert.AreEqual(rcCorrect, rc);            
         }
+
+        [TestMethod]
+        public void RotationTest()
+        {
+            MisspelledWord word;
+            Window window = new Window();
+            window.Add(new Token("test"));
+            window.Add(new Token("test"));
+            window.Add(new Token("test"));
+            window.Add(new Token("test"));
+            window.Add(new Token("test"));
+            window.Add(new Token("testa", false, "testa", 10));
+            window.Add(new Token("test"));
+
+            word = window.GetMisspelledWord();
+            Assert.IsNull(word);
+
+            window.Add(new Token("test"));
+            word = window.GetMisspelledWord();
+            Assert.IsNotNull(word);
+        }
+
+
     }
 }

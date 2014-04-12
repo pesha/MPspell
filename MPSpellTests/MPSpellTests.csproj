@@ -51,8 +51,11 @@
   </Choose>
   <ItemGroup>
     <Compile Include="AffixRulesTest.cs" />
-	<Compile Include="MisspelledWordTest.cs" />	
+	<Compile Include="WindowTest.cs" />	
+	<Compile Include="NgramCollectionTest.cs" />	
+	<Compile Include="FrequencyCountersTest.cs" />	
 	<Compile Include="OpenOfficeDictionaryTest.cs" />	
+	<Compile Include="TokenizerTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

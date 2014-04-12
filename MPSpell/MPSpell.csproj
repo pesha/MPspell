@@ -52,8 +52,10 @@
     <Compile Include="Check\MultipleFilesChecker.cs" />
     <Compile Include="Check\Window.cs" />
     <Compile Include="Check\Token.cs" />
+    <Compile Include="Correction\FileCorrector.cs" />
     <Compile Include="Correction\ILanguageModel.cs" />
     <Compile Include="Correction\LanguageModel.cs" />
+    <Compile Include="Dictionaries\IDictionary.cs" />
     <Compile Include="Dictionaries\Ngram.cs" />
     <Compile Include="Dictionaries\ConfusionMatrix.cs" />
     <Compile Include="Correction\Corrector.cs" />
@@ -73,6 +75,7 @@
     <Compile Include="Dictionaries\Parsers\FrequencyVectorParser.cs" />
     <Compile Include="Dictionaries\Parsers\IConfusionMatrixParser.cs" />
     <Compile Include="Dictionaries\Parsers\NgramParser.cs" />
+    <Compile Include="Dictionaries\SimpleDictionary.cs" />
     <Compile Include="Extensions\ExtensionMethods.cs" />
     <Compile Include="Extensions\OpenOfficeDictionary.cs" />
     <Compile Include="Dictionaries\Parsers\DefaultDictionaryFileParser.cs" />

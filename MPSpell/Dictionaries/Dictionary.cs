@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace MPSpell.Dictionaries
 {
 
-    public class Dictionary : List<string>
+    public class Dictionary : List<string>, IDictionary
     {
 
         public string Name { get; private set; }
@@ -27,9 +27,9 @@ namespace MPSpell.Dictionaries
             this.loader = loader;
         }
 
-        public bool FindWord(string word, bool caseSensitive = false)
+        public bool FindWord(string word)
         {
-            return this.Contains(word) ? true : (this.Contains(word.ToLowerInvariant()) ? true : false);
+            return this.Contains(word) ? true : false;
         }
 
         public string[] GetAlphabet()

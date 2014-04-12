@@ -20,11 +20,11 @@ namespace MPSpell.Correction
             this.languageModel = languageModel;
         }
 
-        public void Correct(MisspelledWord misspelling)
+        public MisspelledWord Correct(MisspelledWord misspelling)
         {
             Dictionary<string, double> candidates = this.generator.GeneratePossibleWords(misspelling.WrongWord);
 
-            string word;
+            string word = null;
             if (candidates.Count > 1)
             {
                 Dictionary<string, double> probabilities = this.languageModel.EvaluateCandidates(misspelling, candidates);
@@ -47,8 +47,14 @@ namespace MPSpell.Correction
             else
             {
                 word = candidates.First().Key;
-            }            
-            
+            }
+
+            if (null != word)
+            {
+                misspelling.CorrectWord = word;
+            }
+
+            return misspelling;
         }
 
     }

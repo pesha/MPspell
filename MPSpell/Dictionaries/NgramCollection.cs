@@ -13,6 +13,12 @@ namespace MPSpell.Dictionaries
 
         public int NgramCount { get; set; }
 
+        public new void Add(Ngram ngram)
+        {
+            NgramCount += ngram.Frequency;
+            base.Add(ngram);
+        }
+
         public double GetProbability(string[] context)
         {
             int occurence = 1;

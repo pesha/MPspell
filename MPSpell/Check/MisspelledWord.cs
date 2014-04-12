@@ -18,11 +18,24 @@ namespace MPSpell.Check
                 return this.context[this.errorPosition].Word;
             }
         }
+        public string RawWord
+        {
+            get
+            {
+                return this.context[this.errorPosition].RawWord;
+            }
+        }
+        public string CorrectWord { get; set; }        
 
         public MisspelledWord(IEnumerable<Token> collection, int errorPos)
         {
             context = new List<Token>(collection);
             errorPosition = errorPos;
+        }
+
+        public uint GetPosition()
+        {
+            return (uint) this.context[errorPosition].Position;
         }
 
         public Token GetWrongWindowItem()

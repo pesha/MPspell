@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MPSpell.Dictionaries;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,14 +10,15 @@ namespace MPSpell.Check
     public class Tokenizer
     {
 
-        protected MPSpell.Dictionaries.Dictionary dictionary;
+        protected IDictionary dictionary;
 
         protected string word = string.Empty;
         protected Window window = new Window();
+        protected uint lastStart = 0;
         protected uint currentPos = 0;
 
 
-        public Tokenizer(MPSpell.Dictionaries.Dictionary dict)
+        public Tokenizer(IDictionary dict)
         {
             dictionary = dict;
         }
@@ -26,11 +28,10 @@ namespace MPSpell.Check
             currentPos++;
             MisspelledWord misspelling = null;
 
-            if (padding)
+            if (padding && word == String.Empty)
             {
                 window.Add(new Token('.', true));
                 misspelling = window.GetMisspelledWord();
-
             }
             else
             {
@@ -57,7 +58,7 @@ namespace MPSpell.Check
 
                             if (!this.dictionary.FindWord(pureWord))
                             {
-                                token = new Token(pureWord, context, word, currentPos);
+                                token = new Token(pureWord, context, word, lastStart);
                             }
                             else
                             {
@@ -66,12 +67,15 @@ namespace MPSpell.Check
 
                             word = String.Empty;
                         }
-
+                                                    
                         if (null != token)
                         {
+                            
                             window.Add(token);
                             misspelling = window.GetMisspelledWord();
                         }
+
+                        lastStart = currentPos;
 
                         break;
 
