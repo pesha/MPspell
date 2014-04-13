@@ -36,7 +36,7 @@ namespace MPSpell.Correction
         private void ProccesFile(string file, bool overwrite = false)
         {
             Encoding encoding = EncodingDetector.DetectEncoding(this.path);
-            StreamReader reader = new StreamReader(this.path, encoding);
+            StreamReader reader = new StreamReader(this.path, encoding);            
 
             string outFile = overwrite ? "tmp_" + file : file;
 
@@ -46,10 +46,10 @@ namespace MPSpell.Correction
             int currentStart = 0;
             int currentEnd = 0;
             string line = string.Empty;
-            bool process = false;
+            bool process = false;            
             while (!reader.EndOfStream)
             {
-                char chr = (char)reader.Read();
+                char chr = (char) reader.Read();                
                 int padding = 0;
                 if (chr == '\r' || chr == '\n')
                 {
@@ -76,7 +76,7 @@ namespace MPSpell.Correction
                     currentEnd = currentStart + line.Length + padding;
                     foreach (MisspelledWord word in misspellings)
                     {
-                        if (currentStart < word.GetPosition() && word.GetPosition() < currentEnd)
+                        if (currentStart < word.GetPosition() && word.GetPosition() < currentEnd && word.CorrectWord != null)
                         {
                             bool added = false;
                             int a = word.GetPosition() - currentStart;

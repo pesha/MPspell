@@ -11,18 +11,18 @@ namespace MPSpell.Correction
     public class Corrector
     {
 
-        private IErrorModel generator;
-        private ILanguageModel languageModel;
+        private IErrorModel errorModel;
+        private ILanguageModel languageModel;        
 
         public Corrector(IErrorModel errorModel, ILanguageModel languageModel)
         {
-            this.generator = errorModel;
-            this.languageModel = languageModel;
+            this.errorModel = errorModel;
+            this.languageModel = languageModel;            
         }
 
         public MisspelledWord Correct(MisspelledWord misspelling)
         {
-            Dictionary<string, double> candidates = this.generator.GeneratePossibleWords(misspelling.WrongWord);
+            Dictionary<string, double> candidates = this.errorModel.GeneratePossibleWords(misspelling.WrongWord);
 
             string word = null;
             if (candidates.Count > 1)
@@ -44,12 +44,12 @@ namespace MPSpell.Correction
                 }
 
             }
-            else
+            else if(candidates.Count == 1)
             {
                 word = candidates.First().Key;
             }
 
-            if (null != word)
+            if (null != word && !misspelling.IsName())
             {
                 misspelling.CorrectWord = word;
             }

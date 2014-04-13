@@ -18,7 +18,8 @@ namespace MPSpell.Check
         protected int lastStart = 0;
         protected int currentPos = 0;
 
-        private Regex rg = new Regex(@"(\W*)([a-z]*)(\W*)", RegexOptions.Compiled);
+        private Regex rg = new Regex(@"(\W*)([A-Za-z]*)(\W*)", RegexOptions.Compiled);
+        private Regex tokenWithAlphanum = new Regex(@"([a-z\d]+)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
         public Tokenizer(IDictionary dict)
         {
@@ -26,7 +27,7 @@ namespace MPSpell.Check
         }
 
         public MisspelledWord HandleChar(char chr, bool padding = false)
-        {
+        {            
             currentPos++;
             MisspelledWord misspelling = null;
 
@@ -49,22 +50,32 @@ namespace MPSpell.Check
                         Token token = null;
                         if (String.Empty != word)
                         {
-                            string[] wordContext = this.TrimSpecialChars(word.ToLowerInvariant());
-                            if (string.Empty == wordContext[1])
+                            bool skipDetection = false;
+                            string[] wordContext = this.TrimSpecialChars(word);
+                            string pureWord = wordContext[1].ToLowerInvariant();
+                            if (string.Empty == pureWord)
                             {
-                                word = String.Empty;
-                                break;
+                                if (tokenWithAlphanum.Match(word).Success)
+                                {
+                                    skipDetection = true;
+                                    pureWord = word;
+                                }
+                                else
+                                {
+                                    word = String.Empty;
+                                    break;
+                                }
                             }
 
                             bool context = this.HasContextEnded(chr) ? true : false;
 
-                            if (!this.dictionary.FindWord(wordContext[1]))
+                            if (!skipDetection && !this.dictionary.FindWord(pureWord))
                             {
-                                token = new Token(wordContext[1], context, wordContext, lastStart);
+                                token = new Token(pureWord, context, wordContext, lastStart);
                             }
                             else
                             {
-                                token = new Token(wordContext[1], context);
+                                token = new Token(pureWord, context);
                             }
 
                             word = String.Empty;

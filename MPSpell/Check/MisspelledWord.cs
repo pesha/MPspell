@@ -11,11 +11,12 @@ namespace MPSpell.Check
 
         private int errorPosition;
         private List<Token> context;
+        public string CorrectWord { get; set; }
         public string WrongWord
         {
             get
             {
-                return this.context[this.errorPosition].Word;
+                return this.context[errorPosition].Word;
             }
         }
         public string RawWord
@@ -24,8 +25,7 @@ namespace MPSpell.Check
             {
                 return WordContext[0] + WordContext[1] + WordContext[2];
             }
-        }
-        public string CorrectWord { get; set; }
+        }        
         public string CorrectWordWithContext
         {
             get
@@ -37,7 +37,7 @@ namespace MPSpell.Check
         {
             get
             {
-                return this.context[this.errorPosition].WordContext;
+                return this.context[errorPosition].WordContext;
             }
         }
 
@@ -47,10 +47,16 @@ namespace MPSpell.Check
             context = new List<Token>(collection);
             errorPosition = errorPos;
         }
+       
 
         public int GetPosition()
         {
             return (int) this.context[errorPosition].Position;
+        }
+
+        public bool IsName()
+        {
+            return (this.WordContext[1][0] == char.ToUpperInvariant(this.WordContext[1][0])) ? true : false;
         }
 
         public Token GetWrongWindowItem()
