@@ -7,6 +7,7 @@ using MPSpell.Dictionaries.Affixes;
 using MPSpell.Dictionaries.Parsers;
 using MPSpell.Extensions;
 using MPSpell.Correction;
+using System.IO;
 
 namespace MPSpell.Dictionaries
 {
@@ -33,6 +34,23 @@ namespace MPSpell.Dictionaries
             this.ngramParser = ngramParser;
         }
 
+        // todo move 
+        internal void ParseSimpleDictionary(Dictionary dictionary)
+        {
+            string file = dictionary.GetFile(DictionaryFileType.LineDictionary);
+            if (null != file)
+            {
+                Encoding enc = EncodingDetector.DetectEncoding(file);
+                using (StreamReader reader = new StreamReader(file, enc))
+                {
+                    while (!reader.EndOfStream)
+                    {
+                        dictionary.AddFast(reader.ReadLine());
+                    }
+                }
+            }
+        }
+
         internal void ParseDictionary(Dictionary dictionary)
         {
             AffixRules rules = null;
@@ -54,7 +72,7 @@ namespace MPSpell.Dictionaries
 
             foreach (DictionaryItemWithFlags item in rawDict)
             {
-                if (null == rules)
+                if (null == item.Flags)
                 {
                     dictionary.Add(item.Word);
                 }

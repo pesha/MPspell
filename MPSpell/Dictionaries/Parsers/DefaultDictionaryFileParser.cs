@@ -1,4 +1,5 @@
 ﻿using MPSpell.Dictionaries.Affixes;
+using MPSpell.Extensions;
 using System;
 using System.Collections.Generic;
 using System.IO;

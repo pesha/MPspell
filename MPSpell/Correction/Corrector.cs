@@ -49,7 +49,7 @@ namespace MPSpell.Correction
                 word = candidates.First().Key;
             }
 
-            if (null != word && !misspelling.IsName())
+            if (null != word)
             {
                 misspelling.CorrectWord = word;
             }

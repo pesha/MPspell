@@ -24,7 +24,29 @@ namespace MPSpell.Dictionaries
         {
             Name = name;
             this.path = path;
-            this.loader = loader;
+            this.loader = loader;        
+        }
+
+        public void AddFast(string word)
+        {
+            base.Add(word);
+        }
+
+        public new void Add(string word)
+        {
+            word = word.ToLowerInvariant();
+            if (!this.Contains(word))
+            {
+                base.Add(word);
+            }
+        }
+
+        public void AddRange(List<string> words)
+        {
+            foreach (string word in words)
+            {
+                this.Add(word);
+            }
         }
 
         public bool FindWord(string word)
@@ -96,7 +118,14 @@ namespace MPSpell.Dictionaries
         // @todo refactor
         public void PreloadDictionaries()
         {
-            this.loader.ParseDictionary(this);
+            if (this.GetFile(DictionaryFileType.LineDictionary) != null)
+            {
+                this.loader.ParseSimpleDictionary(this);
+            }
+            else
+            {
+                this.loader.ParseDictionary(this);
+            }
             this.loader.ParseConfusionMatrixes(this);
             this.loader.ParseFrequences(this);
             this.loader.ParseNgrams(this);
@@ -106,7 +135,7 @@ namespace MPSpell.Dictionaries
 
     public enum DictionaryFileType
     {
-        PlainDictionary,
+        LineDictionary,
         Dictionary,
         Affix,
         OneCharFrequences,

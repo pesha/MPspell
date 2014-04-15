@@ -88,6 +88,10 @@ namespace MPSpell.Dictionaries
                     DictionaryFileType type = DictionaryFileType.Unknown;
                     switch (file.Attributes["type"].Value)
                     {
+                        case "LineDictionary":
+                            type = DictionaryFileType.LineDictionary;
+                            break;
+
                         case "Dictionary":
                             type = DictionaryFileType.Dictionary;
                             break;
