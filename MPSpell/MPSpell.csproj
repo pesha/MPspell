@@ -20,6 +20,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <UseVSHostingProcess>true</UseVSHostingProcess>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -54,6 +55,7 @@
     <Compile Include="Correction\FileCorrectionHandler.cs" />
     <Compile Include="Correction\ILanguageModel.cs" />
     <Compile Include="Correction\LanguageModel.cs" />
+    <Compile Include="Dictionaries\DictionaryNode.cs" />
     <Compile Include="Dictionaries\IDictionary.cs" />
     <Compile Include="Dictionaries\Ngram.cs" />
     <Compile Include="Dictionaries\ConfusionMatrix.cs" />

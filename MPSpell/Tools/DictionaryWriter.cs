@@ -17,11 +17,12 @@ namespace MPSpell.Tools
             {
                 using (StreamWriter writer = new StreamWriter(fStream, Encoding.UTF8))
                 {
-                    foreach (string word in dictionary)
+                    /*foreach (string word in dictionary)
                     {
                         writer.WriteLine(word);
                     }
                     writer.Close();
+                     * */
                 }
             }
         }

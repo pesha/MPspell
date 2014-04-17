@@ -25,6 +25,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <UseVSHostingProcess>true</UseVSHostingProcess>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -51,11 +52,12 @@
   </Choose>
   <ItemGroup>
     <Compile Include="AffixRulesTest.cs" />
-	<Compile Include="WindowTest.cs" />	
-	<Compile Include="NgramCollectionTest.cs" />	
-	<Compile Include="FrequencyCountersTest.cs" />	
-	<Compile Include="OpenOfficeDictionaryTest.cs" />	
-	<Compile Include="TokenizerTest.cs" />
+    <Compile Include="WindowTest.cs" />
+    <Compile Include="NgramCollectionTest.cs" />
+    <Compile Include="FrequencyCountersTest.cs" />
+    <Compile Include="OpenOfficeDictionaryTest.cs" />
+	<Compile Include="DictionaryPerformaceTest.cs" />
+    <Compile Include="TokenizerTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

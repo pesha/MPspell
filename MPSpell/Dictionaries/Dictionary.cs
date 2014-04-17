@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace MPSpell.Dictionaries
 {
 
-    public class Dictionary : List<string>, IDictionary
+    public class Dictionary : IDictionary
     {
 
         public string Name { get; private set; }
@@ -20,6 +20,8 @@ namespace MPSpell.Dictionaries
         private Dictionary<NgramType, NgramCollection> ngrams = new Dictionary<NgramType, NgramCollection>();
         private DictionaryLoader loader;
 
+        private DictionaryNode dictionary = new DictionaryNode();
+
         public Dictionary(DictionaryLoader loader, string name, string path)
         {
             Name = name;
@@ -27,18 +29,10 @@ namespace MPSpell.Dictionaries
             this.loader = loader;        
         }
 
-        public void AddFast(string word)
+        public void Add(string word)
         {
-            base.Add(word);
-        }
-
-        public new void Add(string word)
-        {
-            word = word.ToLowerInvariant();
-            if (!this.Contains(word))
-            {
-                base.Add(word);
-            }
+            word = word.ToLowerInvariant();            
+            dictionary.Add(word);            
         }
 
         public void AddRange(List<string> words)
@@ -51,7 +45,7 @@ namespace MPSpell.Dictionaries
 
         public bool FindWord(string word)
         {
-            return this.Contains(word) ? true : false;
+            return dictionary.FindWord(word);
         }
 
         public string[] GetAlphabet()

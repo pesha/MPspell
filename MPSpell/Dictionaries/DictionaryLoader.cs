@@ -45,7 +45,7 @@ namespace MPSpell.Dictionaries
                 {
                     while (!reader.EndOfStream)
                     {
-                        dictionary.AddFast(reader.ReadLine());
+                        dictionary.Add(reader.ReadLine());
                     }
                 }
             }
