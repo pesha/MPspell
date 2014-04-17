@@ -19,7 +19,7 @@ namespace MPSpell.Check
         protected int lastStart = 0;
         protected int currentPos = 0;
 
-        private Regex rg = new Regex(@"(\W*)([A-Za-z-]*)(\W*)", RegexOptions.Compiled);
+        private Regex rg = new Regex(@"(\W*)([A-Za-z'-]*)(\W*)", RegexOptions.Compiled);
         private Regex containSpecial = new Regex(@"([-]+)", RegexOptions.Compiled);
         private Regex tokenWithAlphanum = new Regex(@"([a-z\d]+)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
         private Regex abbreviation = new Regex("([A-Z]{2,})", RegexOptions.Compiled);
@@ -69,6 +69,7 @@ namespace MPSpell.Check
                                 }
                                 else
                                 {
+                                    lastStart = currentPos;
                                     word = String.Empty;
                                     break;
                                 }

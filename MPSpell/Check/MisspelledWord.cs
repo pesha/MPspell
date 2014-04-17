@@ -31,7 +31,8 @@ namespace MPSpell.Check
         {
             get
             {
-                return WordContext[0] + CorrectWord + WordContext[2];
+                string word = this.IsName() ? char.ToUpper(CorrectWord[0]) + CorrectWord.Substring(1) : CorrectWord;
+                return WordContext[0] + word + WordContext[2];
             }
         }
         public string[] WordContext

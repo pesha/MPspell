@@ -89,6 +89,7 @@
     <Compile Include="Tools\CorporaReader.cs" />
     <Compile Include="Tools\CharFrequencyCounter.cs" />
     <Compile Include="Tools\DictionaryWriter.cs" />
+    <Compile Include="Correction\FolderCorrector.cs" />
     <Compile Include="Tools\ICorporaOutputHandler.cs" />
     <Compile Include="Tools\LineParsers\HCLineParser.cs" />
     <Compile Include="Tools\TwoCharFrequencyCounter.cs" />
