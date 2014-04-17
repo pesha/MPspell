@@ -30,12 +30,9 @@ namespace MPSpellTests
             }, 5));
         }
 
-
-
         [TestMethod]
         public void ProbabilityTest()
         {
-            Assert.AreEqual(3, collection.Count);
             Assert.AreEqual(30, collection.NgramCount);
 
             double probability = collection.GetProbability(new string[] { "raw", "world" });

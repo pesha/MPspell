@@ -8,31 +8,24 @@ using System.Threading.Tasks;
 
 namespace MPSpell.Dictionaries
 {
-    public class NgramCollection : List<Ngram>
+    public class NgramCollection
     {
 
         public int NgramCount { get; set; }
 
-        public new void Add(Ngram ngram)
+        NgramNode ngramTree = new NgramNode();
+
+        public void Add(Ngram ngram)
         {
             NgramCount += ngram.Frequency;
-            base.Add(ngram);
+            ngramTree.Add(ngram);
         }
-
+       
         public double GetProbability(string[] context)
         {
-            int occurence = 1;
-
-            foreach (Ngram item in this)
-            {
-                if (Enumerable.SequenceEqual(item.Words, context))
-                {
-                    occurence = item.Frequency;
-                    break;
-                }
-            }
-
-            return (double) occurence / NgramCount;
+            int occurence = this.ngramTree.GetOccurences(context);
+ 
+            return (double) ((occurence == 0) ? 1 : occurence) / NgramCount;
         }
 
     }

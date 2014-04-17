@@ -34,7 +34,7 @@ namespace MPSpell.Dictionaries.Parsers
 
             int count = int.Parse(parts[0]);
 
-            return new Ngram(parts[1].Split(separator), count);
+            return new Ngram(parts[1].Split(separator, StringSplitOptions.RemoveEmptyEntries), count);
         }
 
 

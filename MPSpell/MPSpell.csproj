@@ -84,6 +84,7 @@
     <Compile Include="Dictionaries\Parsers\IAffixFileParser.cs" />
     <Compile Include="Extensions\EncodingDetector.cs" />
     <Compile Include="Extensions\TextFileEncodingDetector.cs" />
+    <Compile Include="Dictionaries\NgramNode.cs" />
     <Compile Include="Tools\BaseCounter.cs" />
     <Compile Include="Tools\CorporaReader.cs" />
     <Compile Include="Tools\CharFrequencyCounter.cs" />
