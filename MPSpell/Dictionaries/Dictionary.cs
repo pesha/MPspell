@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MPSpell.Extensions;
 
 namespace MPSpell.Dictionaries
 {
@@ -12,6 +13,8 @@ namespace MPSpell.Dictionaries
     {
 
         public string Name { get; private set; }
+        public char[] Alphabet { get; private set; }
+        public char[] SpecialCharsInsideWord { get; private set; }
 
         private string path;
         private Dictionary<DictionaryFileType, string> files = new Dictionary<DictionaryFileType, string>();
@@ -21,12 +24,15 @@ namespace MPSpell.Dictionaries
         private DictionaryLoader loader;
 
         private DictionaryNode dictionary = new DictionaryNode();
+        
 
-        public Dictionary(DictionaryLoader loader, string name, string path)
+        public Dictionary(DictionaryLoader loader, string name, string path, char[] alphabet, char[] specialChars = null)
         {
             Name = name;
+            Alphabet = alphabet;
+            SpecialCharsInsideWord = specialChars;
             this.path = path;
-            this.loader = loader;        
+            this.loader = loader;                    
         }
 
         public void Add(string word)
@@ -48,14 +54,28 @@ namespace MPSpell.Dictionaries
             return dictionary.FindWord(word);
         }
 
-        public string[] GetAlphabet()
+        public string[] GetAlphabetAsString()
         {
-            return new string[] { "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z" };
+            return Alphabet.ToStringArray();
         }
 
-        public static string[] GetAlphabetStatic()
+        public string[] GetAlphabetForErrorModel(bool withSpace = false)
         {
-            return new string[] { " ", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z" };
+            List<string> alphabet = new List<string>();
+            alphabet.AddRange(this.GetAlphabetAsString());
+            foreach (char chr in SpecialCharsInsideWord)
+            {
+                alphabet.Add(chr.ToString());
+            }
+            if (withSpace)
+            {
+                alphabet.Add(" ");
+            }
+
+            string[] res = alphabet.ToArray();
+            Array.Sort<string>(res);
+
+            return res;
         }
 
         public void AddFile(DictionaryFileType type, string filename)

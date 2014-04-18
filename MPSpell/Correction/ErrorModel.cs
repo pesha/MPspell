@@ -16,7 +16,7 @@ namespace MPSpell.Correction
         public ErrorModel(Dictionary dictionary)
         {
             this.dictionary = dictionary;
-            this.alphabet = dictionary.GetAlphabet();
+            this.alphabet = dictionary.GetAlphabetAsString();
         }
 
         private double CalculateProbability(EditOperation operation, char x, char y)

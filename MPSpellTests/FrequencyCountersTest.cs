@@ -19,8 +19,11 @@ namespace MPSpellTests
 
         public FrequencyCounterTest()
         {
-            charCounter = new CharFrequencyCounter(Dictionary.GetAlphabetStatic());
-            twoCharCounter = new TwoCharFrequencyCounter(Dictionary.GetAlphabetStatic());
+            DictionaryManager manager = new DictionaryManager(@"C:\dev\git\Pspell\SpellCheckerConsole\bin\Debug\dictionaries");
+            Dictionary enUs = manager.GetDictionary("en_US");
+
+            charCounter = new CharFrequencyCounter(enUs.GetAlphabetForErrorModel(true));
+            twoCharCounter = new TwoCharFrequencyCounter(enUs.GetAlphabetForErrorModel(true));
         }
 
         [TestMethod]

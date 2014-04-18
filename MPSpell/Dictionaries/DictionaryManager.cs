@@ -82,7 +82,9 @@ namespace MPSpell.Dictionaries
             {
                 DictionaryLoader loader = this.CreateDefaultLoader();
                 string name = node.Attributes["locale"].Value;
-                dictionary = new Dictionary(loader, name, path);
+                char[] alphabet = node.Attributes["alphabet"].Value.ToCharArray();
+                char[] specialChards = node.Attributes["allowedSpecialChars"].Value.ToCharArray();
+                dictionary = new Dictionary(loader, name, path, alphabet, specialChards);
                 foreach (XmlNode file in node.ChildNodes)
                 {
                     DictionaryFileType type = DictionaryFileType.Unknown;

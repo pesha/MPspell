@@ -90,6 +90,13 @@
     <Compile Include="Tools\CharFrequencyCounter.cs" />
     <Compile Include="Tools\DictionaryWriter.cs" />
     <Compile Include="Correction\FolderCorrector.cs" />
+    <Compile Include="Tools\ErrorModel\DeletionsMatrixGenerator.cs" />
+    <Compile Include="Tools\ErrorModel\ErrorListParser.cs" />
+    <Compile Include="Tools\ErrorModel\InsertionsMatrixGenerator.cs" />
+    <Compile Include="Tools\ErrorModel\MatrixExport.cs" />
+    <Compile Include="Tools\ErrorModel\MatrixGenerator.cs" />
+    <Compile Include="Tools\ErrorModel\SubstitutionsMatrixGenerator.cs" />
+    <Compile Include="Tools\ErrorModel\TranspositionsMatrixGenerator.cs" />
     <Compile Include="Tools\ICorporaOutputHandler.cs" />
     <Compile Include="Tools\LineParsers\HCLineParser.cs" />
     <Compile Include="Tools\TwoCharFrequencyCounter.cs" />

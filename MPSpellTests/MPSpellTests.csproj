@@ -53,7 +53,8 @@
   <ItemGroup>
     <Compile Include="AffixRulesTest.cs" />
     <Compile Include="WindowTest.cs" />
-    <Compile Include="NgramCollectionTest.cs" />
+    <Compile Include="NgramCollectionTest.cs" />	
+	<Compile Include="MatrixGeneratorTest.cs" />	
     <Compile Include="FrequencyCountersTest.cs" />	
     <Compile Include="OpenOfficeDictionaryTest.cs" />
 	<Compile Include="DictionaryPerformaceTest.cs" />
