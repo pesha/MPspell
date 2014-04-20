@@ -13,6 +13,7 @@ namespace MPSpell.Check
         private int errorPosition;
         private List<Token> context;
         public string CorrectWord { get; set; }
+        public double Accuracy { get; set; }
         public string WrongWord
         {
             get

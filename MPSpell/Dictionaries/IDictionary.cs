@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MPSpell.Correction;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,6 +11,10 @@ namespace MPSpell.Dictionaries
     {
 
         bool FindWord(string word);
+        string[] GetAlphabetAsString();
+        int GetConfusionFrequency(char x, char y, EditOperation operation);
+        int GetOneCharFrequency(string str);
+        int GetTwoCharFrequency(string str);
 
     }
 }

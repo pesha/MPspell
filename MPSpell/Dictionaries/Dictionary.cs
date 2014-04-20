@@ -24,7 +24,7 @@ namespace MPSpell.Dictionaries
         private DictionaryLoader loader;
 
         private DictionaryNode dictionary = new DictionaryNode();
-        
+
 
         public Dictionary(DictionaryLoader loader, string name, string path, char[] alphabet, char[] specialChars = null)
         {
@@ -32,13 +32,13 @@ namespace MPSpell.Dictionaries
             Alphabet = alphabet;
             SpecialCharsInsideWord = specialChars;
             this.path = path;
-            this.loader = loader;                    
+            this.loader = loader;
         }
 
         public void Add(string word)
         {
-            word = word.ToLowerInvariant();            
-            dictionary.Add(word);            
+            word = word.ToLowerInvariant();
+            dictionary.Add(word);
         }
 
         public void AddRange(List<string> words)
@@ -106,6 +106,35 @@ namespace MPSpell.Dictionaries
         public int GetTwoCharFrequency(string str)
         {
             return this.frequences[FrequencyVectorType.TwoChar][str];
+        }
+
+        public NgramType GetHighestAvailableNgramCollection(int contextSize)
+        {
+            if (contextSize == 3)
+            {
+                if (this.ngrams.ContainsKey(NgramType.Trigram))
+                {
+                    return NgramType.Trigram;
+                }
+                if (this.ngrams.ContainsKey(NgramType.Digram))
+                {
+                    return NgramType.Digram;
+                }
+            }
+            if (contextSize == 2)
+            {
+                if (this.ngrams.ContainsKey(NgramType.Digram))
+                {
+                    return NgramType.Digram;
+                }
+            }
+
+            return NgramType.Unigram;
+        }
+
+        public bool IsAvailableNgramCollection(NgramType type)
+        {
+            return this.ngrams.ContainsKey(type);
         }
 
         public NgramCollection GetNgramCollection(NgramType type)

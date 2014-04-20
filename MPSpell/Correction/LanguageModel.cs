@@ -22,42 +22,20 @@ namespace MPSpell.Correction
         {
             List<string> leftContext = word.GetLeftContext();
 
-            NgramType type = NgramType.Unigram;
-            switch (leftContext.Count)
-            {
-                case 2:
-                    type = NgramType.Digram;
-                    break;
-
-                case 3:
-                    type = NgramType.Trigram;
-                    break;
-            }
+            
+            NgramType type = this.dictionary.GetHighestAvailableNgramCollection(leftContext.Count);
 
             Dictionary<string, double> probability = new Dictionary<string, double>();
-            string[] lcArray = leftContext.ToArray();
+            string[] lcArray = leftContext.ToArray();            
             foreach (KeyValuePair<string, double> option in candidates)
             {
                 lcArray[leftContext.Count - 1] = option.Key;
                 probability.Add(option.Key, this.dictionary.GetNgramCollection(type).GetProbability(lcArray));
             }
 
-            List<string> rightContext = word.GetRightContext();            
-            switch (rightContext.Count)
-            {
-                case 2:
-                    type = NgramType.Digram;
-                    break;
+            List<string> rightContext = word.GetRightContext();
 
-                case 3:
-                    type = NgramType.Trigram;
-                    break;      
-          
-                default:
-                    type = NgramType.Unigram;
-                    break;
-            }
-
+            type = this.dictionary.GetHighestAvailableNgramCollection(rightContext.Count);
             string[] rcArray = rightContext.ToArray();
             foreach (KeyValuePair<string, double> option in candidates)
             {

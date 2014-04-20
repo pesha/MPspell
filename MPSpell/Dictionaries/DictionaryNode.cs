@@ -52,10 +52,7 @@ namespace MPSpell.Dictionaries
             foreach(DictionaryNode node in nodes){
                 if (node.Key == word[level])
                 {
-                    if (node.FindToken(word, ++level))
-                    {
-                        return true;
-                    }
+                    return node.FindToken(word, ++level);                    
                 }
             }
 

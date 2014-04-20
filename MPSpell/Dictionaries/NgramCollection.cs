@@ -11,21 +11,28 @@ namespace MPSpell.Dictionaries
     public class NgramCollection
     {
 
-        public int NgramCount { get; set; }
+        private readonly int AddOneConstant = 1;
+
+        public int NgramCount { get; private set; }
+        public int UniqueNgrams { get; private set; }
 
         NgramNode ngramTree = new NgramNode();
-
+        
         public void Add(Ngram ngram)
         {
             NgramCount += ngram.Frequency;
+            UniqueNgrams++;
+
             ngramTree.Add(ngram);
         }
        
         public double GetProbability(string[] context)
-        {
+        {            
             int occurence = this.ngramTree.GetOccurences(context);
- 
-            return (double) ((occurence == 0) ? 1 : occurence) / NgramCount;
+
+            // add one smoothing
+            return (double) (occurence + AddOneConstant) / (NgramCount + AddOneConstant * UniqueNgrams); 
+            //return (double) ((occurence == 0) ? 1 : occurence) / NgramCount;
         }
 
     }

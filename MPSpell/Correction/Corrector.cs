@@ -25,14 +25,17 @@ namespace MPSpell.Correction
             Dictionary<string, double> candidates = this.errorModel.GeneratePossibleWords(misspelling.WrongWord);
 
             string word = null;
+            double accuracy = 0;
             if (candidates.Count > 1)
             {
+                double totalProps = 0;
                 Dictionary<string, double> probabilities = this.languageModel.EvaluateCandidates(misspelling, candidates);
                 foreach (KeyValuePair<string, double> option in candidates)
                 {
                     probabilities[option.Key] *= option.Value;
+                    totalProps += probabilities[option.Key];
                 }
-
+               
                 double? max = null;
                 foreach (KeyValuePair<string, double> pair in probabilities)
                 {
@@ -40,17 +43,19 @@ namespace MPSpell.Correction
                     {
                         max = pair.Value;
                         word = pair.Key;
+                        accuracy = (pair.Value * 100) / totalProps;
                     }
                 }
-
             }
             else if(candidates.Count == 1)
             {
+                accuracy = 100;
                 word = candidates.First().Key;
             }
 
             if (null != word)
             {
+                misspelling.Accuracy = accuracy;
                 misspelling.CorrectWord = word;
             }
 

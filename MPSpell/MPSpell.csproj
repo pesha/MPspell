@@ -88,6 +88,7 @@
     <Compile Include="Tools\BaseCounter.cs" />
     <Compile Include="Tools\CorporaReader.cs" />
     <Compile Include="Tools\CharFrequencyCounter.cs" />
+    <Compile Include="Tools\DictionaryGenerator.cs" />
     <Compile Include="Tools\DictionaryWriter.cs" />
     <Compile Include="Correction\FolderCorrector.cs" />
     <Compile Include="Tools\ErrorModel\DeletionsMatrixGenerator.cs" />

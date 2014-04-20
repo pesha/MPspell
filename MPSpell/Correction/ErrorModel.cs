@@ -11,9 +11,9 @@ namespace MPSpell.Correction
     {
 
         private string[] alphabet;
-        private Dictionary dictionary;
+        private IDictionary dictionary;
 
-        public ErrorModel(Dictionary dictionary)
+        public ErrorModel(IDictionary dictionary)
         {
             this.dictionary = dictionary;
             this.alphabet = dictionary.GetAlphabetAsString();
