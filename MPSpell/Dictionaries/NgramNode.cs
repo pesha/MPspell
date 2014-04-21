@@ -75,6 +75,7 @@ namespace MPSpell
                 if (node.Key == context[word][level])
                 {
                     result = node.FindNode(context, word, nextLevel);
+                    //todo neni zde problem?
                     if (null != result)
                     {
                         return result;

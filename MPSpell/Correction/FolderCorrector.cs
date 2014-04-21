@@ -13,35 +13,49 @@ namespace MPSpell.Correction
     public class FolderCorrector
     {
 
+        public List<FileInfo> FilesToProcess { get; private set; }
+
         private string directory;
+        private string resultDirectory;
         private List<string> allowedExtensions = new List<string>() { "txt", "" };        
-        private List<FileInfo> filesToProcess;
         private Dictionary dictionary;
         private ILanguageModel languageModel;
         private IErrorModel errorModel;
 
-        public FolderCorrector(Dictionary dictionary, string directory)
+        public FolderCorrector(Dictionary dictionary, string directory, string resultDirectory = null)
         {
             this.directory = directory;
             this.dictionary = dictionary;
             this.languageModel = new LanguageModel(dictionary);
             this.errorModel = new ErrorModel(dictionary);            
-            this.filesToProcess = this.AnalyzeDir(new DirectoryInfo(directory));
+            this.FilesToProcess = this.AnalyzeDir(new DirectoryInfo(directory));
+
+            this.resultDirectory = null != resultDirectory ? resultDirectory : directory;
         }
 
         public FolderCorrector(Dictionary dictionary, List<string> files)
         {
-            this.dictionary = dictionary;
-            
+            this.dictionary = dictionary;            
         }
 
-        public void CorrectFiles()
+        public FolderAnalyzeResult GetFolderAnalyzeResult()
+        {
+            long size = 0;
+            foreach (FileInfo file in FilesToProcess)
+            {
+                size += file.Length;
+            }
+
+            return new FolderAnalyzeResult(FilesToProcess.Count, size);
+        }
+
+        public long CorrectFiles()
         {            
             dictionary.PreloadDictionaries();
             Stopwatch time = Stopwatch.StartNew();
             Corrector corrector = new Corrector(errorModel, languageModel);
 
-            foreach (FileInfo file in filesToProcess)            
+            foreach (FileInfo file in FilesToProcess)            
             {
                 List<MisspelledWord> errors = new List<MisspelledWord>();
                 using (FileChecker checker = new FileChecker(file.FullName, dictionary))
@@ -62,10 +76,12 @@ namespace MPSpell.Correction
                 }
 
                 FileCorrectionHandler handler = new FileCorrectionHandler(file.FullName, errors);
-                handler.SaveCorrectedAs("20_newsgroups_cor/" + file.Name);                
+                handler.SaveCorrectedAs(this.resultDirectory + "/" + file.Name);                
             }
             time.Stop();
             Debug.WriteLine("Elapsed time: " + time.ElapsedMilliseconds + " ms");
+
+            return time.ElapsedMilliseconds;
         }
 
         private List<FileInfo> AnalyzeDir(DirectoryInfo dir)
@@ -88,6 +104,26 @@ namespace MPSpell.Correction
             return files;
         }
 
+
+    }
+
+    public class FolderAnalyzeResult
+    {
+
+        public int FileCount { get; private set; }
+        public long FileSize { get; private set; }
+
+        public FolderAnalyzeResult(int count, long size)
+        {
+            FileCount = count;
+            FileSize = size;
+        }
+
+        // todo resit helperem na verejne casti
+        public string GetSizeInMb()
+        {
+            return Math.Round((double) FileSize / 1024 / 1024, 2).ToString() + "MB";
+        }
 
     }
 

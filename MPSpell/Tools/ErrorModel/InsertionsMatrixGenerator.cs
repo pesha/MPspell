@@ -9,7 +9,7 @@ namespace MPSpell.Tools.ErrorModel
     public class InsertionsMatrixGenerator : MatrixGenerator
     {
 
-        public InsertionsMatrixGenerator(char[] alphabet) : base(alphabet.ToList()) {}
+        public InsertionsMatrixGenerator(char[] alphabet, int initValue = 0) : base(alphabet.ToList(), initValue) {}
 
         protected override List<ErrorType> GenerateErrors(string correctWord, string wrongWord)
         {

@@ -10,14 +10,17 @@ namespace MPSpell.Tools.ErrorModel
     {
 
         protected List<char> alphabet;
+        private int initValue;
 
-        public MatrixGenerator(List<char> alphabet)
+        public MatrixGenerator(List<char> alphabet, int initValue = 0)
         {
             this.alphabet = alphabet;
             this.alphabet.Sort();
+            this.initValue = initValue;
         }
 
         protected abstract List<ErrorType> GenerateErrors(string correctWord, string wrongWord);
+
 
         public Dictionary<char, Dictionary<char, int>> GenerateMatrix(Dictionary<string, List<string>> data)
         {
@@ -47,7 +50,7 @@ namespace MPSpell.Tools.ErrorModel
                 Dictionary<char, int> line = new Dictionary<char, int>();
                 foreach (char chr2 in alphabet)
                 {
-                    line.Add(chr2, 0);
+                    line.Add(chr2, this.initValue);
                 }
                 matrix.Add(chr, line);
             }

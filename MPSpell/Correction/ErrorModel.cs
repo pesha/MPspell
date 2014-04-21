@@ -79,7 +79,7 @@ namespace MPSpell.Correction
                 string edited = String.Copy(word).Remove(i, 1);
                 if (dictionary.FindWord(edited))
                 {
-                    char prev = (i - 1) < 0 ? '@' : word[i];
+                    char prev = (i - 1) < 0 ? ' ' : word[i];
                     double prop = this.CalculateProbability(EditOperation.Deletion,prev,word[i]);
                     if (!result.ContainsKey(edited))
                     {
@@ -101,7 +101,7 @@ namespace MPSpell.Correction
                     string edited = String.Copy(word).Insert(i, item);
                     if (dictionary.FindWord(edited))
                     {
-                        char prev = (i - 1) < 0 ? '@' : word[i-1];
+                        char prev = (i - 1) < 0 ? ' ' : word[i-1];
                         double prop = this.CalculateProbability(EditOperation.Insertion, prev, item[0]);
                         if (!result.ContainsKey(edited))
                         {
