@@ -60,6 +60,7 @@
     <Compile Include="OpenOfficeDictionaryTest.cs" />
 	<Compile Include="DictionaryPerformaceTest.cs" />
     <Compile Include="TokenizerTest.cs" />
+	<Compile Include="DictionaryTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

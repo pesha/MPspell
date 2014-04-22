@@ -53,8 +53,9 @@ namespace MPSpell.Correction
                 int padding = 0;
                 if (chr == '\r' || chr == '\n')
                 {
+                    // todo refactor
                     padding += 1;
-                    if (((char)reader.Peek()) == '\n')
+                    if (chr == '\r' && ((char)reader.Peek()) == '\n')
                     {
                         reader.Read();
                         padding += 1;
@@ -100,7 +101,15 @@ namespace MPSpell.Correction
                         }
                     }
 
-                    writer.WriteLine(line);
+                    if (!reader.EndOfStream)
+                    {
+                        writer.WriteLine(line);
+                    }
+                    else
+                    {
+                        writer.Write(line);
+                    }
+
                     line = String.Empty;
                     currentStart = currentEnd;
                     process = false;

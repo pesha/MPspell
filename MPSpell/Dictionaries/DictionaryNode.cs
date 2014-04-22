@@ -10,17 +10,20 @@ namespace MPSpell.Dictionaries
     {
 
         public char? Key { get; private set; }
+        public bool IsEnd { get; private set; }
         private List<DictionaryNode> nodes = new List<DictionaryNode>();
 
-        public DictionaryNode(char? key = null)
+        public DictionaryNode(char? key = null, bool isEnd = false)
         {            
             Key = key;
+            IsEnd = isEnd;
         }
 
         public void Add(string word, int level = 0)
         {
             if (level >= word.Length)
             {
+                this.IsEnd = true;
                 return;
             }
 
@@ -46,7 +49,7 @@ namespace MPSpell.Dictionaries
         {
             if (word.Length == level)
             {
-                return true;
+                return IsEnd;
             }
 
             foreach(DictionaryNode node in nodes){
