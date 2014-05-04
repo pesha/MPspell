@@ -23,6 +23,32 @@ namespace MPSpellCorrector.Class
             }
         }
 
+        public string DataFolder
+        {
+            get
+            {
+                return MPSpellCorrector.Properties.Settings.Default.DataFolder;
+            }
+
+            set
+            {
+                MPSpellCorrector.Properties.Settings.Default.DataFolder = value;
+            }
+        }
+
+        public string ResultFolder
+        {
+            get
+            {
+                return MPSpellCorrector.Properties.Settings.Default.ResultFolder;
+            }
+
+            set
+            {
+                MPSpellCorrector.Properties.Settings.Default.ResultFolder = value;
+            }
+        }
+
 
     }
 

@@ -12,12 +12,14 @@ namespace MPSpellCorrector.Class
 
         public Project Project { get; set; }
 
-        private Settings settings = new Settings();
+        public Settings Settings = new Settings();
         private DictionaryManager dictManager;        
+
+
 
         public Container()
         {
-            dictManager = new DictionaryManager(settings.DictionariesFolder);
+            dictManager = new DictionaryManager(Settings.DictionariesFolder);
         }
 
         public DictionaryManager GetDictionaryManager()

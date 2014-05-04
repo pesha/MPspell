@@ -5,5 +5,11 @@
     <Setting Name="DictionariesFolder" Type="System.String" Scope="User">
       <Value Profile="(Default)">C:\dev\git\Pspell\SpellCheckerConsole\bin\Debug\gen</Value>
     </Setting>
+    <Setting Name="DataFolder" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="ResultFolder" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
   </Settings>
 </SettingsFile>

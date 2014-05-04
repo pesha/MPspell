@@ -44,10 +44,15 @@ namespace MPSpellCorrector
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             var dialog = new FolderBrowserDialog();
+            if (!String.IsNullOrEmpty(container.Settings.DataFolder))
+            {
+                dialog.SelectedPath = container.Settings.DataFolder;
+            }
             DialogResult result = dialog.ShowDialog();
             if (result == System.Windows.Forms.DialogResult.OK)
             {                
                 project.FolderPath = dialog.SelectedPath;
+                container.Settings.DataFolder = dialog.SelectedPath;
             }
         }
 
