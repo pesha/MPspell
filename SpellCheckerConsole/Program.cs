@@ -22,21 +22,19 @@ namespace SpellCheckerConsole
             //NgramParser parser = new NgramParser();
             //parser.ParseNgrams("w2_.txt");
 
+            DictionaryManager manager = new DictionaryManager("gen");
+            Dictionary enUs = manager.GetDictionary("cs_CZ");
 
-            //TwoCharFrequencyCounter counter = new TwoCharFrequencyCounter(Dictionary.GetAlphabetStatic());
+            //TwoCharFrequencyCounter counter = new TwoCharFrequencyCounter(enUs.GetAlphabetForErrorModel(true));
             //WordFrequencyCounter counter = new WordFrequencyCounter();
-            //CharFrequencyCounter counter = new CharFrequencyCounter(Dictionary.GetAlphabetStatic());
+            //CharFrequencyCounter counter = new CharFrequencyCounter(enUs.GetAlphabetForErrorModel(true));
             //CorporaReader reader = new CorporaReader(new HCLineParser(), counter);
-            //reader.ProcessFile("eng_news.txt");
-            //counter.Save("char_freq_en2.txt");
+            //reader.ProcessFile("gen/data_cz/cz_data.txt");
+            //counter.Save("gen/cs_CZ/wordFreq.txt");
 
-            DictionaryManager manager = new DictionaryManager("gen"); //dictionaries
-            Dictionary enUs = manager.GetDictionary("en_US");
 
-            //enUs.PreloadDictionaries();
-
-            string path = @"C:\dev\git\Pspell\SpellCheckerConsole\bin\Debug\gen\data"; //@"F:\_dp\english\news";
-            DictionaryGenerator generator = new DictionaryGenerator(enUs, path);
+            string path = @"C:\dev\git\Pspell\SpellCheckerConsole\bin\Debug\gen\data_cz"; //@"F:\_dp\english\news";
+            DictionaryGenerator generator = new DictionaryGenerator(enUs, path, "gen/cs_CZ");
             //generator.CalculateFrequences();
             //generator.Save();
             generator.RunBatch();
@@ -52,9 +50,7 @@ namespace SpellCheckerConsole
             FolderCorrector analyze = new FolderCorrector(enUs, @"C:\dev\git\Pspell\SpellCheckerConsole\bin\Debug\20_newsgroups");
             analyze.CorrectFiles();
             */
-
-
-            
+            enUs.PreloadDictionaries();
 
             Corrector corrector = new Corrector(new ErrorModel(enUs), new LanguageModel(enUs));
 

@@ -14,7 +14,7 @@ namespace MPSpell.Tools
         public string ParseLine(string line)
         {
             string[] lines = line.Split(separator, StringSplitOptions.RemoveEmptyEntries);
-            return lines.Last() + " ";
+            return lines.Length > 0 ? lines.Last() + " " : "";
         }
 
     }

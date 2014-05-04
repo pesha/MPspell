@@ -17,6 +17,7 @@ namespace MPSpell.Tools
 
         private Dictionary dictionary;
         private string directory;
+        private string outputDirectory;
         private List<string> allowedExtensions = new List<string>() { ".txt", "" };
         private ILanguageModel languageModel;
         private IErrorModel errorModel;
@@ -31,9 +32,10 @@ namespace MPSpell.Tools
 
         private Dictionary<string, List<string>> data = new Dictionary<string, List<string>>();
 
-        public DictionaryGenerator(Dictionary dictionary, string directory)
-        {
+        public DictionaryGenerator(Dictionary dictionary, string directory, string outputDirectory)
+        {            
             this.dictionary = dictionary;
+            this.outputDirectory = outputDirectory;
             this.directory = directory;            
             this.errorModel = new MPSpell.Correction.ErrorModel(dictionary);
             this.languageModel = new LanguageModel(dictionary);
@@ -72,8 +74,8 @@ namespace MPSpell.Tools
                 }
             }
 
-            charCounter.Save("gen/en_US/oneCharFr.txt");
-            twoCharCounter.Save("gen/en_US/twoCharFr.txt");
+            charCounter.Save(this.outputDirectory + "/oneCharFr.txt");
+            twoCharCounter.Save(this.outputDirectory + "/twoCharFr.txt");
         }
 
         public void RunBatch()
@@ -87,7 +89,7 @@ namespace MPSpell.Tools
 
             foreach (FileInfo file in files)
             {
-                List<MisspelledWord> errors = new List<MisspelledWord>();
+
                 using (FileChecker checker = new FileChecker(file.FullName, dictionary))
                 {
                     while (!checker.EndOfCheck)
@@ -95,32 +97,25 @@ namespace MPSpell.Tools
                         MisspelledWord error = checker.GetNextMisspelling();
                         if (null != error)
                         {
-                            errors.Add(error);
-                        }
-                    }
-                }
-
-                foreach (MisspelledWord error in errors)
-                {
-                    //if (error.WrongWord.Contains('\''))
-                    //    continue;
-
-                    corrector.Correct(error);
-
-                    if(null != error.CorrectWord){
-                        if (!this.data.ContainsKey(error.CorrectWord))
-                        {
-                            this.data.Add(error.CorrectWord, new List<string> { error.RawWord });
-                        }
-                        else
-                        {
-                            if (!this.data[error.CorrectWord].Contains(error.RawWord))
+                            corrector.Correct(error);
+                            if (null != error.CorrectWord)
                             {
-                                this.data[error.CorrectWord].Add(error.RawWord);
+                                if (!this.data.ContainsKey(error.CorrectWord))
+                                {
+                                    this.data.Add(error.CorrectWord, new List<string> { error.RawWord });
+                                }
+                                else
+                                {
+                                    if (!this.data[error.CorrectWord].Contains(error.RawWord))
+                                    {
+                                        this.data[error.CorrectWord].Add(error.RawWord);
+                                    }
+                                }
                             }
                         }
                     }
                 }
+
             }
 
             this.Save();
@@ -128,10 +123,10 @@ namespace MPSpell.Tools
 
         public void Save()
         {
-            MatrixExport.ExportMatrix("gen/en_Us/ins.txt", insGen.GenerateMatrix(this.data));
-            MatrixExport.ExportMatrix("gen/en_Us/del.txt", delGen.GenerateMatrix(this.data));
-            MatrixExport.ExportMatrix("gen/en_Us/sub.txt", subGen.GenerateMatrix(this.data));
-            MatrixExport.ExportMatrix("gen/en_Us/trn.txt", trnGen.GenerateMatrix(this.data));
+            MatrixExport.ExportMatrix(this.outputDirectory + "/ins.txt", insGen.GenerateMatrix(this.data));
+            MatrixExport.ExportMatrix(this.outputDirectory + "/del.txt", delGen.GenerateMatrix(this.data));
+            MatrixExport.ExportMatrix(this.outputDirectory + "/sub.txt", subGen.GenerateMatrix(this.data));
+            MatrixExport.ExportMatrix(this.outputDirectory + "/trn.txt", trnGen.GenerateMatrix(this.data));
         }
 
 

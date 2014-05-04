@@ -82,6 +82,51 @@ namespace MPSpellTests
             };
 
             CollectionAssert.AreEqual(correctWords, words);
+
+
+            Rule ruleN = new Rule("N", Combinable.Y, RuleType.PFX);
+            ruleN.Add(new RuleItem("0", "ne", "."));
+
+            Rule ruleE = new Rule("E", Combinable.Y, RuleType.PFX);
+            ruleE.Add(new RuleItem("0", "nej", "."));
+
+            rules = new AffixRules();
+            rules.Add(ruleN);
+            rules.Add(ruleE);
+
+            words = rules.GetPossibleWords(new DictionaryItemWithFlags("méně", "NE"));
+
+            correctWords = new List<string>()
+            {
+                "méně", 
+                "neméně",
+                "nejméně"
+            };
+
+            CollectionAssert.AreEqual(correctWords, words);
+
+
+            Rule ruleX = new Rule("X", Combinable.Y, RuleType.SFX);
+            ruleX.Add(new RuleItem("a", "ouc", "a"));
+            ruleX.Add(new RuleItem("a", "ouce", "a"));
+
+
+            rules = new AffixRules();
+            rules.Add(ruleN);
+            rules.Add(ruleX);
+
+            words = rules.GetPossibleWords(new DictionaryItemWithFlags("pomra", "XN"));
+            correctWords = new List<string>()
+            {
+                "pomra", 
+                "pomrouc",
+                "pomrouce",
+                "nepomra",
+                "nepomrouc",
+                "nepomrouce",
+            };
+
+
         }
     }
 }

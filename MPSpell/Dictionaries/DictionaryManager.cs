@@ -81,10 +81,21 @@ namespace MPSpell.Dictionaries
             if (null != node)
             {
                 DictionaryLoader loader = this.CreateDefaultLoader();
+                XmlElement el = node as XmlElement;
+
                 string name = node.Attributes["locale"].Value;
                 char[] alphabet = node.Attributes["alphabet"].Value.ToCharArray();
-                char[] specialChards = node.Attributes["allowedSpecialChars"].Value.ToCharArray();
-                dictionary = new Dictionary(loader, name, path, alphabet, specialChards);
+                char[] specialChars = null;
+                string regex = null;
+                if (el.HasAttribute("allowedSpecialChars"))
+                {
+                    specialChars = node.Attributes["allowedSpecialChars"].Value.ToCharArray();
+                }
+                if (el.HasAttribute("wordBoundaryRegex"))
+                {
+                    regex = node.Attributes["wordBoundaryRegex"].Value;
+                }
+                dictionary = new Dictionary(loader, name, path, alphabet, specialChars, regex);
                 foreach (XmlNode file in node.ChildNodes)
                 {
                     DictionaryFileType type = DictionaryFileType.Unknown;

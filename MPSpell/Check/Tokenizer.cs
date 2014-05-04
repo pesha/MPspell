@@ -19,7 +19,7 @@ namespace MPSpell.Check
         protected int lastStart = 0;
         protected int currentPos = 0;
 
-        private Regex rg = new Regex(@"(\W*)([a-z-]*'*[a-z]+)(\W*)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+        private Regex rg;
         private Regex containSpecial = new Regex(@"([-]+)", RegexOptions.Compiled);
         private Regex tokenWithAlphanum = new Regex(@"([a-z\d]+)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
         private Regex abbreviation = new Regex("([A-Z]{2,})", RegexOptions.Compiled);
@@ -27,6 +27,17 @@ namespace MPSpell.Check
         public Tokenizer(IDictionary dict)
         {
             dictionary = dict;
+
+            string regexp = dict.GetWordBoundaryRegex();
+            if (!String.IsNullOrEmpty(regexp))
+            {
+                rg = new Regex(@"(\W*)("+regexp+@")(\W*)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+            }
+            else
+            {
+                rg = new Regex(@"(\W*)([a-z-]*'*[a-z]+)(\W*)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+            }
+
         }
 
         public MisspelledWord HandleChar(char chr, bool padding = false)

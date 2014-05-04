@@ -12,11 +12,12 @@ namespace MPSpell.Dictionaries
     public class Dictionary : IDictionary
     {
 
-        public string Name { get; private set; }
+        public string Name { get; private set; }        
         public char[] Alphabet { get; private set; }
         public char[] SpecialCharsInsideWord { get; private set; }
 
         private string path;
+        private string wordBoundaryRegex;
         private Dictionary<DictionaryFileType, string> files = new Dictionary<DictionaryFileType, string>();
         private Dictionary<EditOperation, ConfusionMatrix> matrixes = new Dictionary<EditOperation, ConfusionMatrix>();
         private Dictionary<FrequencyVectorType, FrequencyVector<string>> frequences = new Dictionary<FrequencyVectorType, FrequencyVector<string>>();
@@ -26,12 +27,14 @@ namespace MPSpell.Dictionaries
         private DictionaryNode dictionary = new DictionaryNode();
 
 
-        public Dictionary(DictionaryLoader loader, string name, string path, char[] alphabet, char[] specialChars = null)
+        public Dictionary(DictionaryLoader loader, string name, string path, char[] alphabet, char[] specialChars = null, string wordBoundaryRegex = null)
         {
             Name = name;
             Alphabet = alphabet;
             SpecialCharsInsideWord = specialChars;
+            
             this.path = path;
+            this.wordBoundaryRegex = wordBoundaryRegex;
             this.loader = loader;
         }
 
@@ -78,6 +81,11 @@ namespace MPSpell.Dictionaries
             return res;
         }
 
+        public string GetWordBoundaryRegex()
+        {
+            return this.wordBoundaryRegex;
+        }
+
         public void AddFile(DictionaryFileType type, string filename)
         {
             files.Add(type, filename);
@@ -95,17 +103,32 @@ namespace MPSpell.Dictionaries
 
         public int GetConfusionFrequency(char x, char y, EditOperation operation)
         {
-            return matrixes[operation].GetValue(x, y);
+            if (this.Alphabet.Contains(x) && this.Alphabet.Contains(y))
+            {
+                return matrixes[operation].GetValue(x, y);
+            }
+
+            return 0;
         }
 
         public int GetOneCharFrequency(string str)
         {
-            return this.frequences[FrequencyVectorType.OneChar][str];
+            if (this.frequences[FrequencyVectorType.OneChar].ContainsKey(str))
+            {
+                return this.frequences[FrequencyVectorType.OneChar][str];
+            }
+
+            return 0;
         }
 
         public int GetTwoCharFrequency(string str)
         {
-            return this.frequences[FrequencyVectorType.TwoChar][str];
+            if (this.frequences[FrequencyVectorType.TwoChar].ContainsKey(str))
+            {
+                return this.frequences[FrequencyVectorType.TwoChar][str];
+            }
+
+            return 0;
         }
 
         public NgramType GetHighestAvailableNgramCollection(int contextSize)

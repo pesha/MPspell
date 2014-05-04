@@ -15,6 +15,7 @@ namespace MPSpell.Dictionaries
         int GetConfusionFrequency(char x, char y, EditOperation operation);
         int GetOneCharFrequency(string str);
         int GetTwoCharFrequency(string str);
+        string GetWordBoundaryRegex();
 
     }
 }

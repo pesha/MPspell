@@ -43,21 +43,53 @@ namespace MPSpell.Dictionaries.Affixes
 
                         foreach (RuleItem ruleItem in rule)
                         {
-                            string word = (rule.Type == RuleType.PFX) ?
-                                                    GeneratePFX(item.Word, ruleItem) :
-                                                    GenerateSFX(item.Word, ruleItem);
-                            if (null != word)
+                            if (rule.Type == RuleType.SFX)
                             {
-                                words.Add(word);
+                                string word = GenerateSFX(item.Word, ruleItem);
+
+                                if (null != word)
+                                {
+                                    words.Add(word);
+                                }
                             }
                         }
+                    }
 
+                }
+
+                List<string> newItems = new List<string>();
+                foreach (string flag in flags)
+                {
+                    if (this.rules.ContainsKey(flag))
+                    {
+                        Rule rule = this.rules[flag];
+                        
+                        foreach (RuleItem ruleItem in rule)
+                        {
+                            if (rule.Type == RuleType.PFX)
+                            {
+                                foreach (string word in words)
+                                {
+                                    string newWord = GeneratePFX(word, ruleItem);
+
+                                    if (null != newWord)
+                                    {
+                                        newItems.Add(newWord);
+                                    }
+                                }
+                            }
+                        }
 
                     }
                     else
                     {
                         // not found between
                     }
+                }
+
+                if (newItems.Count > 0)
+                {
+                    words.AddRange(newItems);
                 }
             }
 
@@ -80,7 +112,11 @@ namespace MPSpell.Dictionaries.Affixes
 
             string tempWord = word.Substring(deleteCount);
 
-            // condition prozatim vynecham
+            // condition prozatimne
+            if (item.Conditions.Count == 1 && item.Conditions.First().First() == '.')
+            {
+                tempWord = item.StringToAdd + tempWord;
+            }
 
 
             return tempWord;

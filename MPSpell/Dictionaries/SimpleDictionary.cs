@@ -36,5 +36,11 @@ namespace MPSpell.Dictionaries
         {
             return 1;
         }
+
+        public string GetWordBoundaryRegex()
+        {
+            return null;
+        }
+
     }
 }

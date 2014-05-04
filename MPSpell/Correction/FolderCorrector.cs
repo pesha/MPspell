@@ -17,7 +17,7 @@ namespace MPSpell.Correction
 
         private string directory;
         private string resultDirectory;
-        private List<string> allowedExtensions = new List<string>() { "txt", "" };        
+        private List<string> allowedExtensions = new List<string>() { ".txt", "" };        
         private Dictionary dictionary;
         private ILanguageModel languageModel;
         private IErrorModel errorModel;
@@ -54,6 +54,7 @@ namespace MPSpell.Correction
             dictionary.PreloadDictionaries();
             Stopwatch time = Stopwatch.StartNew();
             Corrector corrector = new Corrector(errorModel, languageModel);
+            CorrectionStatitic stats = new CorrectionStatitic("stats.txt");
 
             foreach (FileInfo file in FilesToProcess)            
             {
@@ -67,13 +68,17 @@ namespace MPSpell.Correction
                         {
                             errors.Add(error);
                         }
+                        
+                        corrector.Correct(error);
+                        stats.AddCorrection(error);
                     }
                 }
 
+                /*
                 foreach (MisspelledWord error in errors)
                 {
                     corrector.Correct(error);
-                }
+                }*/
 
                 FileCorrectionHandler handler = new FileCorrectionHandler(file.FullName, errors);
                 handler.SaveCorrectedAs(this.resultDirectory + "/" + file.Name);                
