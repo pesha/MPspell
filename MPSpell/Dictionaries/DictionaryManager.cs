@@ -86,6 +86,7 @@ namespace MPSpell.Dictionaries
                 string name = node.Attributes["locale"].Value;
                 char[] alphabet = node.Attributes["alphabet"].Value.ToCharArray();
                 char[] specialChars = null;
+                Dictionary<char, List<char>> accentPairs = null;
                 string regex = null;
                 if (el.HasAttribute("allowedSpecialChars"))
                 {
@@ -95,7 +96,12 @@ namespace MPSpell.Dictionaries
                 {
                     regex = node.Attributes["wordBoundaryRegex"].Value;
                 }
-                dictionary = new Dictionary(loader, name, path, alphabet, specialChars, regex);
+                if (el.HasAttribute("accentPairs"))
+                {
+                    string[] pairs = node.Attributes["accentPairs"].Value.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                    accentPairs = this.ParsePairs(pairs);
+                }
+                dictionary = new Dictionary(loader, name, path, alphabet, specialChars, regex, accentPairs);
                 foreach (XmlNode file in node.ChildNodes)
                 {
                     DictionaryFileType type = DictionaryFileType.Unknown;
@@ -156,6 +162,25 @@ namespace MPSpell.Dictionaries
             }
 
             return dictionary;
+        }
+
+        protected Dictionary<char, List<char>> ParsePairs(string[] pairs)
+        {
+            Dictionary<char, List<char>> result = new Dictionary<char, List<char>>();
+            foreach (string pair in pairs)
+            {
+                string[] data = pair.Split(new char[] { '-' }, StringSplitOptions.RemoveEmptyEntries);
+                if (result.ContainsKey(data[0][0]))
+                {
+                    result[data[0][0]].Add(data[1][0]);
+                }
+                else
+                {
+                    result.Add(data[0][0], new List<char>() { data[1][0] });
+                }
+            }
+
+            return result;
         }
 
         private DictionaryLoader CreateDefaultLoader()

@@ -67,10 +67,15 @@ namespace MPSpell.Check
                             bool skipDetection = false;
                             string[] wordContext = this.TrimSpecialChars(word);
                             string pureWord = wordContext[1].ToLowerInvariant();
-                            if (containSpecial.Match(pureWord).Success || abbreviation.Match(wordContext[1]).Success || this.IsPropablyName(wordContext[1]))
+                            if (pureWord.Length == 1)
                             {
                                 skipDetection = true;
                             }
+
+                            if (containSpecial.Match(pureWord).Success || abbreviation.Match(wordContext[1]).Success || this.IsPropablyName(wordContext[1]))
+                            {
+                                skipDetection = true;
+                            }                            
                             if (string.Empty == pureWord)
                             {
                                 if (tokenWithAlphanum.Match(word).Success)

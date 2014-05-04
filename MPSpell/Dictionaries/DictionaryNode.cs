@@ -62,5 +62,23 @@ namespace MPSpell.Dictionaries
             return false;
         }
 
+        public bool ExistPath(string token, int level = 0)
+        {
+            if (token.Length == level)
+            {
+                return true;
+            }
+
+            foreach (DictionaryNode node in nodes)
+            {
+                if (node.Key == token[level])
+                {
+                    return node.ExistPath(token, ++level);
+                }
+            }
+
+            return false;
+        }
+
     }
 }

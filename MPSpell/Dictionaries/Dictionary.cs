@@ -12,12 +12,13 @@ namespace MPSpell.Dictionaries
     public class Dictionary : IDictionary
     {
 
-        public string Name { get; private set; }        
+        public string Name { get; private set; }
         public char[] Alphabet { get; private set; }
         public char[] SpecialCharsInsideWord { get; private set; }
 
         private string path;
         private string wordBoundaryRegex;
+        private Dictionary<char, List<char>> accentPairs;
         private Dictionary<DictionaryFileType, string> files = new Dictionary<DictionaryFileType, string>();
         private Dictionary<EditOperation, ConfusionMatrix> matrixes = new Dictionary<EditOperation, ConfusionMatrix>();
         private Dictionary<FrequencyVectorType, FrequencyVector<string>> frequences = new Dictionary<FrequencyVectorType, FrequencyVector<string>>();
@@ -27,14 +28,15 @@ namespace MPSpell.Dictionaries
         private DictionaryNode dictionary = new DictionaryNode();
 
 
-        public Dictionary(DictionaryLoader loader, string name, string path, char[] alphabet, char[] specialChars = null, string wordBoundaryRegex = null)
+        public Dictionary(DictionaryLoader loader, string name, string path, char[] alphabet, char[] specialChars = null, string wordBoundaryRegex = null, Dictionary<char, List<char>> accentPairs = null)
         {
             Name = name;
             Alphabet = alphabet;
             SpecialCharsInsideWord = specialChars;
-            
+
             this.path = path;
             this.wordBoundaryRegex = wordBoundaryRegex;
+            this.accentPairs = accentPairs;
             this.loader = loader;
         }
 
@@ -55,6 +57,11 @@ namespace MPSpell.Dictionaries
         public bool FindWord(string word)
         {
             return dictionary.FindWord(word);
+        }
+
+        public bool ExistPath(string token)
+        {
+            return dictionary.ExistPath(token);
         }
 
         public string[] GetAlphabetAsString()
@@ -158,6 +165,11 @@ namespace MPSpell.Dictionaries
         public bool IsAvailableNgramCollection(NgramType type)
         {
             return this.ngrams.ContainsKey(type);
+        }
+
+        public Dictionary<char, List<char>> GetAccentPairs()
+        {
+            return this.accentPairs;
         }
 
         public NgramCollection GetNgramCollection(NgramType type)

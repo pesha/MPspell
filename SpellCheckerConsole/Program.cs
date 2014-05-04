@@ -33,11 +33,11 @@ namespace SpellCheckerConsole
             //counter.Save("gen/cs_CZ/wordFreq.txt");
 
 
-            string path = @"C:\dev\git\Pspell\SpellCheckerConsole\bin\Debug\gen\data_cz"; //@"F:\_dp\english\news";
-            DictionaryGenerator generator = new DictionaryGenerator(enUs, path, "gen/cs_CZ");
+            //string path = @"C:\dev\git\Pspell\SpellCheckerConsole\bin\Debug\gen\data_cz"; //@"F:\_dp\english\news";
+            //DictionaryGenerator generator = new DictionaryGenerator(enUs, path, "gen/cs_CZ");
             //generator.CalculateFrequences();
             //generator.Save();
-            generator.RunBatch();
+            //generator.RunBatch();
 
             /*ErrorListParser parser = new ErrorListParser("generators/en_errors.txt");            
             var data = parser.Parse();
@@ -52,10 +52,12 @@ namespace SpellCheckerConsole
             */
             enUs.PreloadDictionaries();
 
-            Corrector corrector = new Corrector(new ErrorModel(enUs), new LanguageModel(enUs));
+
+
+            Corrector corrector = new Corrector(new ErrorModel(enUs), new LanguageModel(enUs), new AccentModel(enUs));
 
             List<MisspelledWord> mistakes = new List<MisspelledWord>();
-            using (FileChecker checker = new FileChecker("testen2.txt", enUs))
+            using (FileChecker checker = new FileChecker("testcs.txt", enUs))
             {
                 MisspelledWord error;               
                 while ((error = checker.GetNextMisspelling()) != null)
@@ -70,8 +72,8 @@ namespace SpellCheckerConsole
             }
 
 
-            FileCorrectionHandler handler = new FileCorrectionHandler("testen2.txt", mistakes);
-            handler.SaveCorrectedAs("testFixed.txt");
+            FileCorrectionHandler handler = new FileCorrectionHandler("testcs.txt", mistakes);
+            handler.SaveCorrectedAs("testcsFixed.txt");
             //handler.OverwriteWithCorrections();
 
 

@@ -13,17 +13,25 @@ namespace MPSpell.Correction
     {
 
         private StreamWriter writer;
+        private StreamWriter writerCorrected;
 
-        public CorrectionStatitic(string file)
+        public CorrectionStatitic(string fileAll, string fileCorrected)
         {
-            FileStream stream = new FileStream(file, FileMode.Create, FileAccess.Write);
+            FileStream stream = new FileStream(fileAll, FileMode.Create, FileAccess.Write);
             writer = new StreamWriter(stream, Encoding.UTF8);
+
+            FileStream streamCor = new FileStream(fileCorrected, FileMode.Create, FileAccess.Write);
+            writerCorrected = new StreamWriter(streamCor, Encoding.UTF8);
         }
 
         public void AddCorrection(MisspelledWord error)
         {
             writer.WriteLine(error.WrongWord + ": " + error.CorrectWord);
-            writer.Flush();
+
+            if (!String.IsNullOrEmpty(error.CorrectWord))
+            {
+                writerCorrected.WriteLine(error.WrongWord + ": " + error.CorrectWord + "\t\t" + error.Accuracy.ToString());
+            }
         }
 
 

@@ -12,45 +12,59 @@ namespace MPSpell.Correction
     {
 
         private IErrorModel errorModel;
-        private ILanguageModel languageModel;        
+        private ILanguageModel languageModel;
+        private IAccentModel accentModel;
 
-        public Corrector(IErrorModel errorModel, ILanguageModel languageModel)
+        public Corrector(IErrorModel errorModel, ILanguageModel languageModel, IAccentModel accentModel = null)
         {
             this.errorModel = errorModel;
-            this.languageModel = languageModel;            
+            this.languageModel = languageModel;
+            this.accentModel = accentModel;
         }
 
         public MisspelledWord Correct(MisspelledWord misspelling)
         {
-            Dictionary<string, double> candidates = this.errorModel.GeneratePossibleWords(misspelling.WrongWord);
-
             string word = null;
             double accuracy = 0;
-            if (candidates.Count > 1)
+            if (this.accentModel != null)
+            {                
+                word = this.accentModel.AddAccent(misspelling.WrongWord);
+            }
+
+            if (word == null)
             {
-                double totalProps = 0;
-                Dictionary<string, double> probabilities = this.languageModel.EvaluateCandidates(misspelling, candidates);
-                foreach (KeyValuePair<string, double> option in candidates)
+                Dictionary<string, double> candidates = this.errorModel.GeneratePossibleWords(misspelling.WrongWord);
+
+                if (candidates.Count > 1)
                 {
-                    probabilities[option.Key] *= option.Value;
-                    totalProps += probabilities[option.Key];
-                }
-               
-                double? max = null;
-                foreach (KeyValuePair<string, double> pair in probabilities)
-                {
-                    if (null == max || pair.Value > max)
+                    double totalProps = 0;
+                    Dictionary<string, double> probabilities = this.languageModel.EvaluateCandidates(misspelling, candidates);
+                    foreach (KeyValuePair<string, double> option in candidates)
                     {
-                        max = pair.Value;
-                        word = pair.Key;
-                        accuracy = (pair.Value * 100) / totalProps;
+                        probabilities[option.Key] *= option.Value;
+                        totalProps += probabilities[option.Key];
+                    }
+
+                    double? max = null;
+                    foreach (KeyValuePair<string, double> pair in probabilities)
+                    {
+                        if (null == max || pair.Value > max)
+                        {
+                            max = pair.Value;
+                            word = pair.Key;
+                            accuracy = (pair.Value * 100) / totalProps;
+                        }
                     }
                 }
+                else if (candidates.Count == 1)
+                {
+                    accuracy = 100;
+                    word = candidates.First().Key;
+                }
             }
-            else if(candidates.Count == 1)
+            else
             {
                 accuracy = 100;
-                word = candidates.First().Key;
             }
 
             if (null != word)

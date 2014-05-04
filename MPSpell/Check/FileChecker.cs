@@ -33,9 +33,8 @@ namespace MPSpell.Check
         }
 
         private void Init()
-        {
-            Encoding enc = EncodingDetector.DetectEncoding(Path);
-            reader = new StreamReader(Path, enc);
+        {            
+            reader = EncodingDetector.GetStreamWithEncoding(Path);
         }
 
         public override MisspelledWord GetNextMisspelling()
