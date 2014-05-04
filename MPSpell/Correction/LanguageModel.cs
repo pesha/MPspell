@@ -26,7 +26,7 @@ namespace MPSpell.Correction
             NgramType type = this.dictionary.GetHighestAvailableNgramCollection(leftContext.Count);
 
             Dictionary<string, double> probability = new Dictionary<string, double>();
-            string[] lcArray = leftContext.ToArray();            
+            string[] lcArray = this.GetLeftContext(leftContext, type);            
             foreach (KeyValuePair<string, double> option in candidates)
             {
                 lcArray[leftContext.Count - 1] = option.Key;
@@ -34,16 +34,63 @@ namespace MPSpell.Correction
             }
 
             List<string> rightContext = word.GetRightContext();
+            NgramType secType = this.dictionary.GetHighestAvailableNgramCollection(rightContext.Count);
 
-            type = this.dictionary.GetHighestAvailableNgramCollection(rightContext.Count);
-            string[] rcArray = rightContext.ToArray();
-            foreach (KeyValuePair<string, double> option in candidates)
+            if (type == NgramType.Unigram && type == NgramType.Unigram)
             {
-                rcArray[0] = option.Key;
-                probability[option.Key] *= this.dictionary.GetNgramCollection(type).GetProbability(rcArray);
+                // do nothing
+            }
+            else
+            {
+                string[] rcArray = this.GetRightContext(rightContext, secType);
+                foreach (KeyValuePair<string, double> option in candidates)
+                {
+                    rcArray[0] = option.Key;
+                    probability[option.Key] *= this.dictionary.GetNgramCollection(secType).GetProbability(rcArray);
+                }
             }
 
             return probability;
+        }
+
+        private string[] GetLeftContext(List<string> context, NgramType type)
+        {
+            if (type == NgramType.Digram && context.Count == 3)
+            {
+                context.RemoveAt(0);
+            }
+
+            if (type == NgramType.Unigram && context.Count == 3)
+            {                
+                context.RemoveRange(0, 2);
+            }
+
+            if (type == NgramType.Unigram && context.Count == 2)
+            {
+                context.RemoveAt(0);
+            }
+
+            return context.ToArray();
+        }
+
+        public string[] GetRightContext(List<string> context, NgramType type)
+        {
+            if (type == NgramType.Digram && context.Count == 3)
+            {
+                context.RemoveAt(2);
+            }
+
+            if (type == NgramType.Unigram && context.Count == 3)
+            {
+                context.RemoveRange(1, 2);
+            }
+
+            if (type == NgramType.Unigram && context.Count == 2)
+            {
+                context.RemoveAt(1);
+            }
+
+            return context.ToArray();
         }
 
     }

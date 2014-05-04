@@ -18,6 +18,8 @@ namespace MPSpell.Dictionaries
 
         NgramNode ngramTree = new NgramNode();
         
+        private int lastOccurence;
+        
         public void Add(Ngram ngram)
         {
             NgramCount += ngram.Frequency;
@@ -28,11 +30,16 @@ namespace MPSpell.Dictionaries
        
         public double GetProbability(string[] context)
         {            
-            int occurence = this.ngramTree.GetOccurences(context);
+            lastOccurence = this.ngramTree.GetOccurences(context);
 
             // add one smoothing
-            return (double) (occurence + AddOneConstant) / (NgramCount + AddOneConstant * UniqueNgrams); 
+            return (double)(lastOccurence + AddOneConstant) / (NgramCount + AddOneConstant * UniqueNgrams); 
             //return (double) ((occurence == 0) ? 1 : occurence) / NgramCount;
+        }
+
+        public int GetLastOccurence()
+        {
+            return lastOccurence;
         }
 
     }

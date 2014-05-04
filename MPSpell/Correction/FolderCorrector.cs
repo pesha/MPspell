@@ -65,10 +65,14 @@ namespace MPSpell.Correction
                     {
                         MisspelledWord error = checker.GetNextMisspelling();
                         if (null != error)
-                        {
-                            errors.Add(error);
+                        {                            
                             corrector.Correct(error);
                             stats.AddCorrection(error);
+
+                            if (error.CorrectWord != null)
+                            {
+                                errors.Add(error);
+                            }
                         }
                     }
                 }
