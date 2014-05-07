@@ -34,7 +34,7 @@ namespace MPSpell.Check
 
         private void Init()
         {            
-            reader = EncodingDetector.GetStreamWithEncoding(Path);
+            reader = EncodingDetector.GetStreamWithEncoding(Path);        
         }
 
         public override MisspelledWord GetNextMisspelling()

@@ -13,10 +13,10 @@ namespace MPSpell.Correction
     {
 
         private string path;
-        private List<MisspelledWord> misspellings;
+        private Queue<MisspelledWord> misspellings;
         private Encoding outEncoding;
 
-        public FileCorrectionHandler(string path, List<MisspelledWord> misspellings, Encoding outputEncoding = null)
+        public FileCorrectionHandler(string path, Queue<MisspelledWord> misspellings, Encoding outputEncoding = null)
         {
             this.path = path;
             this.misspellings = misspellings;
@@ -36,7 +36,7 @@ namespace MPSpell.Correction
         private void ProccesFile(string file, bool overwrite = false)
         {
             Encoding encoding = EncodingDetector.DetectEncoding(this.path);
-            StreamReader reader = new StreamReader(this.path, encoding);            
+            StreamReader reader = new StreamReader(this.path, encoding);
 
             string outFile = overwrite ? "tmp_" + file : file;
 
@@ -46,10 +46,10 @@ namespace MPSpell.Correction
             int currentStart = 0;
             int currentEnd = 0;
             string line = string.Empty;
-            bool process = false;            
+            bool process = false;
             while (!reader.EndOfStream)
             {
-                char chr = (char) reader.Read();                
+                char chr = (char)reader.Read();
                 int padding = 0;
                 if (chr == '\r' || chr == '\n')
                 {
@@ -75,9 +75,12 @@ namespace MPSpell.Correction
                 if (process)
                 {
                     currentEnd = currentStart + line.Length + padding;
-                    foreach (MisspelledWord word in misspellings)
+
+                    while (misspellings.Count > 0 && currentStart < misspellings.Peek().GetPosition() && misspellings.Peek().GetPosition() < currentEnd)
                     {
-                        if (currentStart < word.GetPosition() && word.GetPosition() < currentEnd && word.CorrectWord != null)
+                        MisspelledWord word = misspellings.Dequeue();
+
+                        if (word.CorrectWord != null)
                         {
                             bool added = false;
                             int a = word.GetPosition() - currentStart;

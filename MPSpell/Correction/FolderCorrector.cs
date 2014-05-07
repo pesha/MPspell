@@ -56,9 +56,12 @@ namespace MPSpell.Correction
             Corrector corrector = new Corrector(errorModel, languageModel);
             CorrectionStatitic stats = new CorrectionStatitic("stats.txt", "statscorrected.txt");
 
+            
+
             foreach (FileInfo file in FilesToProcess)            
             {
-                List<MisspelledWord> errors = new List<MisspelledWord>();
+                FileHandler handler = new FileHandler(file.FullName, this.resultDirectory + "/" + file.Name); 
+
                 using (FileChecker checker = new FileChecker(file.FullName, dictionary))
                 {
                     while (!checker.EndOfCheck)
@@ -71,14 +74,13 @@ namespace MPSpell.Correction
 
                             if (error.CorrectWord != null)
                             {
-                                errors.Add(error);
+                                handler.Push(error);    
                             }
                         }
                     }
                 }
 
-                FileCorrectionHandler handler = new FileCorrectionHandler(file.FullName, errors);
-                handler.SaveCorrectedAs(this.resultDirectory + "/" + file.Name);                
+                handler.Close();           
             }
             time.Stop();
             Debug.WriteLine("Elapsed time: " + time.ElapsedMilliseconds + " ms");

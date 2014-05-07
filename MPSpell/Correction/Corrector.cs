@@ -11,6 +11,8 @@ namespace MPSpell.Correction
     public class Corrector
     {
 
+        private bool skipBecauseOfLm = false;
+
         private IErrorModel errorModel;
         private ILanguageModel languageModel;
         private IAccentModel accentModel;

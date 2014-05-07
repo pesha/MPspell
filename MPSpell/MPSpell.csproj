@@ -55,6 +55,7 @@
     <Compile Include="Correction\AccentModel.cs" />
     <Compile Include="Correction\CorrectionStatitic.cs" />
     <Compile Include="Correction\FileCorrectionHandler.cs" />
+    <Compile Include="Correction\FileHandler.cs" />
     <Compile Include="Correction\IAccentModel.cs" />
     <Compile Include="Correction\ILanguageModel.cs" />
     <Compile Include="Correction\LanguageModel.cs" />

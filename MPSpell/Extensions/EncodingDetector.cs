@@ -22,7 +22,9 @@ namespace MPSpell.Extensions
             }
             else
             {
-                reader = EncodingTools.OpenTextFile(file);
+                //reader = EncodingTools.OpenTextFile(file);
+                FileStream stream = File.OpenRead(file);
+                reader = EncodingTools.OpenTextStream(stream);
             }
 
             return reader;

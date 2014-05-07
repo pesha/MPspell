@@ -18,6 +18,7 @@ namespace MPSpell.Dictionaries
 
         private string path;
         private string wordBoundaryRegex;
+        private bool isDictionaryLoaded = false;
         private Dictionary<char, List<char>> accentPairs;
         private Dictionary<DictionaryFileType, string> files = new Dictionary<DictionaryFileType, string>();
         private Dictionary<EditOperation, ConfusionMatrix> matrixes = new Dictionary<EditOperation, ConfusionMatrix>();
@@ -26,7 +27,6 @@ namespace MPSpell.Dictionaries
         private DictionaryLoader loader;
 
         private DictionaryNode dictionary = new DictionaryNode();
-
 
         public Dictionary(DictionaryLoader loader, string name, string path, char[] alphabet, char[] specialChars = null, string wordBoundaryRegex = null, Dictionary<char, List<char>> accentPairs = null)
         {
@@ -196,17 +196,20 @@ namespace MPSpell.Dictionaries
         // @todo refactor
         public void PreloadDictionaries()
         {
-            if (this.GetFile(DictionaryFileType.LineDictionary) != null)
+            if (!this.isDictionaryLoaded)
             {
-                this.loader.ParseSimpleDictionary(this);
+                if (this.GetFile(DictionaryFileType.LineDictionary) != null)
+                {
+                    this.loader.ParseSimpleDictionary(this);
+                }
+                else
+                {
+                    this.loader.ParseDictionary(this);
+                }
+                this.loader.ParseConfusionMatrixes(this);
+                this.loader.ParseFrequences(this);
+                this.loader.ParseNgrams(this);
             }
-            else
-            {
-                this.loader.ParseDictionary(this);
-            }
-            this.loader.ParseConfusionMatrixes(this);
-            this.loader.ParseFrequences(this);
-            this.loader.ParseNgrams(this);
         }
 
     }

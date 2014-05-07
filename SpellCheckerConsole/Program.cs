@@ -50,30 +50,43 @@ namespace SpellCheckerConsole
             FolderCorrector analyze = new FolderCorrector(enUs, @"C:\dev\git\Pspell\SpellCheckerConsole\bin\Debug\20_newsgroups");
             analyze.CorrectFiles();
             */
-            enUs.PreloadDictionaries();
 
+
+            //FileCorrectionHandler handlerTest = new FileCorrectionHandler("gen/data_cz/cz_data.txt", new List<MisspelledWord>());
+            //handlerTest.SaveCorrectedAs("gen/temp/cz_data_copy.txt");
+
+
+            FileHandler handlerTest = new FileHandler("testcs.txt", "testcsFixed2.txt");
+            //handlerTest.CopyFile();
+
+
+            enUs.PreloadDictionaries();
 
 
             Corrector corrector = new Corrector(new ErrorModel(enUs), new LanguageModel(enUs), new AccentModel(enUs));
 
-            List<MisspelledWord> mistakes = new List<MisspelledWord>();
+            //Queue<MisspelledWord> mistakes = new Queue<MisspelledWord>();
             using (FileChecker checker = new FileChecker("testcs.txt", enUs))
             {
                 MisspelledWord error;               
                 while ((error = checker.GetNextMisspelling()) != null)
                 {
-                    mistakes.Add(error);
+                    //mistakes.Enqueue(error);
+                    corrector.Correct(error);
+
+                    if (error.CorrectWord != "")
+                    {
+                        handlerTest.Push(error);
+                    }
+
                 }
             }
 
-            foreach (MisspelledWord word in mistakes)
-            {
-                corrector.Correct(word);
-            }
+            handlerTest.Close();
 
 
-            FileCorrectionHandler handler = new FileCorrectionHandler("testcs.txt", mistakes);
-            handler.SaveCorrectedAs("testcsFixed.txt");
+            //FileCorrectionHandler handler = new FileCorrectionHandler("testcs.txt", mistakes);
+            //handler.SaveCorrectedAs("testcsFixed.txt");
             //handler.OverwriteWithCorrections();
 
 
