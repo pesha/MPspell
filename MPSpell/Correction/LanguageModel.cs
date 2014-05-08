@@ -8,6 +8,21 @@ using System.Threading.Tasks;
 
 namespace MPSpell.Correction
 {
+
+    public class LanguageModelEvaluation
+    {
+
+        public Dictionary<string, double> Probabilities { get; private set; }
+        public bool FoundInNgrams { get; private set; }
+
+        public LanguageModelEvaluation(Dictionary<string, double> evalutation, bool foundInNgrams)
+        {
+            Probabilities = evalutation;
+            FoundInNgrams = foundInNgrams;
+        }
+
+    }
+
     public class LanguageModel : ILanguageModel
     {
 
@@ -18,23 +33,26 @@ namespace MPSpell.Correction
         {
             dictionary = dict;
         }
-        
-        public Dictionary<string, double> EvaluateCandidates(MisspelledWord word, Dictionary<string, double> candidates)
+
+        public LanguageModelEvaluation EvaluateCandidates(MisspelledWord word, Dictionary<string, double> candidates)
         {
             foundInNgrams = false;
             List<string> leftContext = word.GetLeftContext();
 
-            
+
             NgramType type = this.dictionary.GetHighestAvailableNgramCollection(leftContext.Count);
 
             Dictionary<string, double> probability = new Dictionary<string, double>();
-            string[] lcArray = this.GetLeftContext(leftContext, type);            
+            string[] lcArray = this.GetLeftContext(leftContext, type);
+            NgramEvaluation evaluation;
             foreach (KeyValuePair<string, double> option in candidates)
             {
                 lcArray[leftContext.Count - 1] = option.Key;
-                probability.Add(option.Key, this.dictionary.GetNgramCollection(type).GetProbability(lcArray));
 
-                if (!foundInNgrams && this.dictionary.GetNgramCollection(type).GetLastOccurence() > 0)
+                evaluation = this.dictionary.GetNgramCollection(type).GetProbability(lcArray);
+                probability.Add(option.Key, evaluation.Probability);
+
+                if (!foundInNgrams && evaluation.Occurence > 0)
                 {
                     foundInNgrams = true;
                 }
@@ -53,22 +71,20 @@ namespace MPSpell.Correction
                 foreach (KeyValuePair<string, double> option in candidates)
                 {
                     rcArray[0] = option.Key;
-                    probability[option.Key] *= this.dictionary.GetNgramCollection(secType).GetProbability(rcArray);
 
-                    if (!foundInNgrams && this.dictionary.GetNgramCollection(type).GetLastOccurence() > 0)
+                    evaluation = this.dictionary.GetNgramCollection(secType).GetProbability(rcArray);
+                    probability[option.Key] *= evaluation.Probability;
+
+                    if (!foundInNgrams && evaluation.Occurence > 0)
                     {
                         foundInNgrams = true;
                     }
                 }
             }
 
-            return probability;
+            return new LanguageModelEvaluation(probability, foundInNgrams);
         }
 
-        public bool FoundAnyCandidateInNgrams()
-        {
-            return foundInNgrams;
-        }
 
         private string[] GetLeftContext(List<string> context, NgramType type)
         {
@@ -78,7 +94,7 @@ namespace MPSpell.Correction
             }
 
             if (type == NgramType.Unigram && context.Count == 3)
-            {                
+            {
                 context.RemoveRange(0, 2);
             }
 

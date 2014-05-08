@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace MPSpell.Correction
@@ -15,57 +16,75 @@ namespace MPSpell.Correction
     {
 
         public List<FileInfo> FilesToProcess { get; private set; }
+        public bool PreserveSubfolders { get; set; }
 
         private string directory;
         private string resultDirectory;
-        private List<string> allowedExtensions = new List<string>() { ".txt", "" };        
+        private List<string> allowedExtensions = new List<string>() { ".txt", "" };
         private Dictionary dictionary;
         private ILanguageModel languageModel;
         private IAccentModel accentModel;
         private IErrorModel errorModel;
 
+        private Corrector corrector;
+
         public FolderCorrector(Dictionary dictionary, string directory, string resultDirectory = null)
         {
             this.directory = directory;
             this.dictionary = dictionary;
+
+            // setup models
             this.languageModel = new LanguageModel(dictionary);
             this.errorModel = new ErrorModel(dictionary);
-            this.accentModel = new AccentModel(dictionary);
+            this.accentModel = dictionary.IsAccentModelAvailable() ? new AccentModel(dictionary) : null;
+
+            // setup corrector
+            this.corrector = new Corrector(errorModel, languageModel, accentModel, true);
+
+            // prepare files and folders
             this.FilesToProcess = this.AnalyzeDir(new DirectoryInfo(directory));
-
             this.resultDirectory = null != resultDirectory ? resultDirectory : directory;
+
+            // other settings
+            PreserveSubfolders = true;
         }
 
-        public FolderCorrector(Dictionary dictionary, List<string> files)
+        public long RunCorrection()
         {
-            this.dictionary = dictionary;            
-        }
-
-        public FolderAnalyzeResult GetFolderAnalyzeResult()
-        {
-            long size = 0;
-            foreach (FileInfo file in FilesToProcess)
-            {
-                size += file.Length;
-            }
-
-            return new FolderAnalyzeResult(FilesToProcess.Count, size);
-        }
-
-
-
-
-
-        public long CorrectFiles()
-        {            
             dictionary.PreloadDictionaries();
             Stopwatch time = Stopwatch.StartNew();
-            Corrector corrector = new Corrector(errorModel, languageModel, accentModel, true);
-            CorrectionStatitic stats = new CorrectionStatitic("stats.txt", "statscorrected.txt");
-      
-            foreach (FileInfo file in FilesToProcess)            
+
+            List<FileInfo>[] filesGroups = this.DivadeIntoGroups(2);
+
+            Task<CorrectionStatitic>[] tasks = new Task<CorrectionStatitic>[filesGroups.Length];
+            int id = 0;
+            foreach (List<FileInfo> group in filesGroups)
             {
-                FileHandler handler = new FileHandler(file.FullName, this.resultDirectory + "/" + file.Name); 
+                if (group.Count > 0)
+                {
+                    Task<CorrectionStatitic> task = Task<CorrectionStatitic>.Factory.StartNew(() =>
+                    {
+                        return this.CorrectGroup(group, id);
+                    });
+
+                    tasks[id++] = task;
+                }                
+            }
+
+            Task.WaitAll(tasks);            
+
+            return time.ElapsedMilliseconds;
+        }
+
+        private CorrectionStatitic CorrectGroup(List<FileInfo> group, int id)
+        {
+            CorrectionStatitic stats = new CorrectionStatitic();
+
+            foreach (FileInfo file in group)
+            {
+                string output = PreserveSubfolders ? this.GetSubfolder(file) : this.resultDirectory + "/" + file.Name;
+
+                FileHandler handler = new FileHandler(file.FullName, output);
 
                 using (FileChecker checker = new FileChecker(file.FullName, dictionary))
                 {
@@ -73,28 +92,55 @@ namespace MPSpell.Correction
                     {
                         MisspelledWord error = checker.GetNextMisspelling();
                         if (null != error)
-                        {                            
+                        {
                             corrector.Correct(error);
                             stats.AddCorrection(error);
 
                             if (error.CorrectWord != null)
                             {
-                                handler.Push(error);    
+                                handler.Push(error);
                             }
                         }
                     }
                 }
 
-                handler.Close();           
+                handler.Close();
             }
-            time.Stop();
-            Debug.WriteLine("Elapsed time: " + time.ElapsedMilliseconds + " ms");
 
-            return time.ElapsedMilliseconds;
+            stats.Close();
+            return stats;
         }
 
+        private List<FileInfo>[] DivadeIntoGroups(int groupCount)
+        {
+            List<FileInfo>[] groups = new List<FileInfo>[groupCount];
 
+            for (int i = 0; i < groups.Length; i++)
+            {
+                groups[i] = new List<FileInfo>();
+            }
 
+            int current = 0;
+            foreach (FileInfo file in this.FilesToProcess)
+            {
+                groups[current].Add(file);
+                current++;
+                if (current >= groups.Length)
+                {
+                    current = 0;
+                }
+            }
+
+            return groups;
+        }
+
+        private string GetSubfolder(FileInfo info)
+        {
+            string path = info.FullName;
+            path = path.Replace(this.directory, "");
+
+            return this.resultDirectory + path;
+        }
 
         private List<FileInfo> AnalyzeDir(DirectoryInfo dir)
         {
@@ -116,6 +162,16 @@ namespace MPSpell.Correction
             return files;
         }
 
+        public FolderAnalyzeResult GetFolderAnalyzeResult()
+        {
+            long size = 0;
+            foreach (FileInfo file in FilesToProcess)
+            {
+                size += file.Length;
+            }
+
+            return new FolderAnalyzeResult(FilesToProcess.Count, size);
+        }
 
     }
 
@@ -134,7 +190,7 @@ namespace MPSpell.Correction
         // todo resit helperem na verejne casti
         public string GetSizeInMb()
         {
-            return Math.Round((double) FileSize / 1024 / 1024, 2).ToString() + "MB";
+            return Math.Round((double)FileSize / 1024 / 1024, 2).ToString() + "MB";
         }
 
     }

@@ -50,9 +50,9 @@ namespace MPSpell.Correction
             if (candidates.Count > 1)
             {
                 double totalProps = 0;
-                Dictionary<string, double> probabilities = this.languageModel.EvaluateCandidates(misspelling, candidates);
+                LanguageModelEvaluation evaluation = this.languageModel.EvaluateCandidates(misspelling, candidates);
 
-                if (skipCandidatesMissingInNgrams && !this.languageModel.FoundAnyCandidateInNgrams())
+                if (skipCandidatesMissingInNgrams && !evaluation.FoundInNgrams)
                 {
                     misspelling.RevokedByLm = true;
                     return;
@@ -60,12 +60,12 @@ namespace MPSpell.Correction
 
                 foreach (KeyValuePair<string, double> option in candidates)
                 {
-                    probabilities[option.Key] *= option.Value;
-                    totalProps += probabilities[option.Key];
+                    evaluation.Probabilities[option.Key] *= option.Value;
+                    totalProps += evaluation.Probabilities[option.Key];
                 }
 
                 double? max = null;
-                foreach (KeyValuePair<string, double> pair in probabilities)
+                foreach (KeyValuePair<string, double> pair in evaluation.Probabilities)
                 {
                     if (null == max || pair.Value > max)
                     {

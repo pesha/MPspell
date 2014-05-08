@@ -17,7 +17,8 @@
                     <MenuItem Header="_New" Click="New_MenuItem_Click"/>
                     <MenuItem Header="_Close"/>
                 </MenuItem>
-                <MenuItem Header="_Settings">
+                <MenuItem Header="_Tools">
+                    <MenuItem Header="_Settings" Click="Settings_MenuItem_Click"/>
                 </MenuItem>
             </Menu>
             <StackPanel></StackPanel>

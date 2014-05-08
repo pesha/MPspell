@@ -52,8 +52,19 @@ namespace MPSpellCorrector
         
         private void Run_Button_Click(object sender, RoutedEventArgs e)
         {
-            long time = corrector.CorrectFiles();
+            long time = corrector.RunCorrection();
             this.RunningTime.Text = Math.Round((double)time / 1000, 1).ToString() + "sec";
+        }
+
+        private void MenuItem_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void Settings_MenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            SettingsWindow window = new SettingsWindow();
+            window.Show();
         }
 
     }

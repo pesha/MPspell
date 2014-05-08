@@ -8,6 +8,22 @@ using System.Threading.Tasks;
 
 namespace MPSpell.Dictionaries
 {
+
+    public class NgramEvaluation
+    {
+
+        public double Probability { get; private set; }
+        public int Occurence { get; private set; }
+
+
+        public NgramEvaluation(double probability, int occurence)
+        {
+            Probability = probability;
+            Occurence = occurence;
+        }
+
+    }
+
     public class NgramCollection
     {
 
@@ -18,8 +34,7 @@ namespace MPSpell.Dictionaries
 
         NgramNode ngramTree = new NgramNode();
         
-        private int lastOccurence;
-        
+
         public void Add(Ngram ngram)
         {
             NgramCount += ngram.Frequency;
@@ -28,18 +43,14 @@ namespace MPSpell.Dictionaries
             ngramTree.Add(ngram);
         }
        
-        public double GetProbability(string[] context)
+        public NgramEvaluation GetProbability(string[] context)
         {            
-            lastOccurence = this.ngramTree.GetOccurences(context);
+            int lastOccurence = this.ngramTree.GetOccurences(context);
 
-            // add one smoothing
-            return (double)(lastOccurence + AddOneConstant) / (NgramCount + AddOneConstant * UniqueNgrams); 
             //return (double) ((occurence == 0) ? 1 : occurence) / NgramCount;
-        }
-
-        public int GetLastOccurence()
-        {
-            return lastOccurence;
+            // add one smoothing
+            double prop = (double)(lastOccurence + AddOneConstant) / (NgramCount + AddOneConstant * UniqueNgrams);
+            return new NgramEvaluation(prop, lastOccurence);
         }
 
     }

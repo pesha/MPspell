@@ -40,6 +40,11 @@ namespace MPSpell.Dictionaries
             this.loader = loader;
         }
 
+        public bool IsAccentModelAvailable()
+        {
+            return (null == accentPairs) ? false : true;
+        }
+
         public void Add(string word)
         {
             word = word.ToLowerInvariant();

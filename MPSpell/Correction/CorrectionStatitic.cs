@@ -1,4 +1,5 @@
-﻿using MPSpell.Check;
+﻿using MPSpell.Extensions;
+using MPSpell.Check;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -12,15 +13,21 @@ namespace MPSpell.Correction
     class CorrectionStatitic
     {
 
+        public string File { get; private set; }
+        public string FileCorrected { get; private set; }
+
         private StreamWriter writer;
         private StreamWriter writerCorrected;
 
-        public CorrectionStatitic(string fileAll, string fileCorrected)
+        public CorrectionStatitic(string fileAll = null, string fileCorrected = null)
         {
-            FileStream stream = new FileStream(fileAll, FileMode.Create, FileAccess.Write);
+            this.File = (null != fileAll) ? fileAll : Path.GetTempFileName();
+            this.FileCorrected = (null != fileCorrected) ? fileCorrected : Path.GetTempFileName();
+
+            FileStream stream = new FileStream(this.File, FileMode.Create, FileAccess.Write);
             writer = new StreamWriter(stream, Encoding.UTF8);
 
-            FileStream streamCor = new FileStream(fileCorrected, FileMode.Create, FileAccess.Write);
+            FileStream streamCor = new FileStream(this.FileCorrected, FileMode.Create, FileAccess.Write);
             writerCorrected = new StreamWriter(streamCor, Encoding.UTF8);
         }
 
@@ -34,6 +41,49 @@ namespace MPSpell.Correction
             }
         }
 
+        public void Close()
+        {
+            writer.Close();
+            writerCorrected.Close();
+        }
+
+        public void GenerateSummary()
+        {
+            this.Close();
+
+            Dictionary<string, long> occurences = new Dictionary<string, long>();
+            
+            char[] separator = new char[] { ';' };            
+
+            using (StreamReader reader = EncodingDetector.GetStreamWithEncoding(this.File))
+            {
+                while (!reader.EndOfStream)
+                {
+                    string line = reader.ReadLine();
+                    string[] parts = line.Split(separator);
+
+                    if (occurences.ContainsKey(parts[0]))
+                    {
+                        occurences[parts[0]] += 1;
+                    }
+                    else
+                    {
+                        occurences.Add(parts[0], 1);
+                    }
+                }
+            }
+
+            var sortedDict = from entry in occurences orderby entry.Value descending select entry;
+
+            using (StreamWriter writer = new StreamWriter(System.IO.File.OpenWrite("summary.txt"), Encoding.UTF8))
+            {
+                foreach (var pair in sortedDict)
+                {
+                    writer.WriteLine(pair.Key + ";" + pair.Value);
+                }
+            }
+            
+        }
 
     }
 

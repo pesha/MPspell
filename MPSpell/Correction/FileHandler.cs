@@ -30,6 +30,12 @@ namespace MPSpell.Correction
 
             reader = EncodingDetector.GetStreamWithEncoding(this.sourcePath);
 
+            DirectoryInfo dir = Directory.GetParent(destinationPath);
+            if (!Directory.Exists(dir.FullName))
+            {
+                Directory.CreateDirectory(dir.FullName);    
+            }
+
             FileStream fStream = new FileStream(this.destinationPath, FileMode.Create, FileAccess.Write);
             writer = new StreamWriter(fStream, this.outEncoding);
             

@@ -39,10 +39,10 @@
                                    Title="Review settings"                                   
                                    CanFinish="True">
 
-                <StackPanel>
+                <!--StackPanel>
                     <TextBlock Text="Dictionary:" />
                     <TextBlock Text="{Binding Path=Name}"/>
-                </StackPanel>
+                </StackPanel-->
                 
             </xctk:WizardPage>
             

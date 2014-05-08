@@ -11,8 +11,7 @@ namespace MPSpell.Correction
     public interface ILanguageModel
     {
 
-        Dictionary<string, double> EvaluateCandidates(MisspelledWord word, Dictionary<string, double> candidates);
-        bool FoundAnyCandidateInNgrams();
+        LanguageModelEvaluation EvaluateCandidates(MisspelledWord word, Dictionary<string, double> candidates);        
 
     }
 }
