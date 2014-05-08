@@ -1,4 +1,5 @@
 ﻿using MPSpell.Dictionaries;
+using MPSpell.Extensions;
 using MPSpell.Check;
 using System;
 using System.Collections.Generic;
@@ -20,6 +21,7 @@ namespace MPSpell.Correction
         private List<string> allowedExtensions = new List<string>() { ".txt", "" };        
         private Dictionary dictionary;
         private ILanguageModel languageModel;
+        private IAccentModel accentModel;
         private IErrorModel errorModel;
 
         public FolderCorrector(Dictionary dictionary, string directory, string resultDirectory = null)
@@ -27,7 +29,8 @@ namespace MPSpell.Correction
             this.directory = directory;
             this.dictionary = dictionary;
             this.languageModel = new LanguageModel(dictionary);
-            this.errorModel = new ErrorModel(dictionary);            
+            this.errorModel = new ErrorModel(dictionary);
+            this.accentModel = new AccentModel(dictionary);
             this.FilesToProcess = this.AnalyzeDir(new DirectoryInfo(directory));
 
             this.resultDirectory = null != resultDirectory ? resultDirectory : directory;
@@ -49,15 +52,17 @@ namespace MPSpell.Correction
             return new FolderAnalyzeResult(FilesToProcess.Count, size);
         }
 
+
+
+
+
         public long CorrectFiles()
         {            
             dictionary.PreloadDictionaries();
             Stopwatch time = Stopwatch.StartNew();
-            Corrector corrector = new Corrector(errorModel, languageModel);
+            Corrector corrector = new Corrector(errorModel, languageModel, accentModel, true);
             CorrectionStatitic stats = new CorrectionStatitic("stats.txt", "statscorrected.txt");
-
-            
-
+      
             foreach (FileInfo file in FilesToProcess)            
             {
                 FileHandler handler = new FileHandler(file.FullName, this.resultDirectory + "/" + file.Name); 
@@ -87,6 +92,9 @@ namespace MPSpell.Correction
 
             return time.ElapsedMilliseconds;
         }
+
+
+
 
         private List<FileInfo> AnalyzeDir(DirectoryInfo dir)
         {

@@ -12,14 +12,16 @@ namespace MPSpell.Correction
     {
 
         private Dictionary dictionary;
+        private bool foundInNgrams;
 
         public LanguageModel(Dictionary dict)
         {
             dictionary = dict;
         }
-
+        
         public Dictionary<string, double> EvaluateCandidates(MisspelledWord word, Dictionary<string, double> candidates)
         {
+            foundInNgrams = false;
             List<string> leftContext = word.GetLeftContext();
 
             
@@ -31,6 +33,11 @@ namespace MPSpell.Correction
             {
                 lcArray[leftContext.Count - 1] = option.Key;
                 probability.Add(option.Key, this.dictionary.GetNgramCollection(type).GetProbability(lcArray));
+
+                if (!foundInNgrams && this.dictionary.GetNgramCollection(type).GetLastOccurence() > 0)
+                {
+                    foundInNgrams = true;
+                }
             }
 
             List<string> rightContext = word.GetRightContext();
@@ -47,10 +54,20 @@ namespace MPSpell.Correction
                 {
                     rcArray[0] = option.Key;
                     probability[option.Key] *= this.dictionary.GetNgramCollection(secType).GetProbability(rcArray);
+
+                    if (!foundInNgrams && this.dictionary.GetNgramCollection(type).GetLastOccurence() > 0)
+                    {
+                        foundInNgrams = true;
+                    }
                 }
             }
 
             return probability;
+        }
+
+        public bool FoundAnyCandidateInNgrams()
+        {
+            return foundInNgrams;
         }
 
         private string[] GetLeftContext(List<string> context, NgramType type)
@@ -73,7 +90,7 @@ namespace MPSpell.Correction
             return context.ToArray();
         }
 
-        public string[] GetRightContext(List<string> context, NgramType type)
+        private string[] GetRightContext(List<string> context, NgramType type)
         {
             if (type == NgramType.Digram && context.Count == 3)
             {

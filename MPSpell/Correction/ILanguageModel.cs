@@ -12,6 +12,7 @@ namespace MPSpell.Correction
     {
 
         Dictionary<string, double> EvaluateCandidates(MisspelledWord word, Dictionary<string, double> candidates);
+        bool FoundAnyCandidateInNgrams();
 
     }
 }

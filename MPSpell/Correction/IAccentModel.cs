@@ -9,7 +9,7 @@ namespace MPSpell.Correction
     public interface IAccentModel
     {
 
-        string AddAccent(string word);
+        List<string> AddAccent(string word);
 
     }
 

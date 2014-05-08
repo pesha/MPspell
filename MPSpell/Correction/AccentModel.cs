@@ -19,7 +19,7 @@ namespace MPSpell.Correction
             this.accentPairs = dictionary.GetAccentPairs();
         }
 
-        public string AddAccent(string word)
+        public List<string> AddAccent(string word)
         {
             List<string> result = new List<string>();
             for (int i = 0; i < word.Length; i++)
@@ -48,7 +48,14 @@ namespace MPSpell.Correction
                         }
                     }
 
-                    result = newItems;
+                    if (newItems.Count == 0)
+                    {
+                        return null;
+                    }
+                    else
+                    {
+                        result = newItems;
+                    }
                 }
                 else
                 {
@@ -66,7 +73,17 @@ namespace MPSpell.Correction
                 }
             }
 
-            return result.Count > 0 ? result[0] : null;
+
+            List<string> finalResult = new List<string>();
+            foreach (string candidate in result)
+            {
+                if (dictionary.FindWord(candidate))
+                {
+                    finalResult.Add(candidate);
+                }
+            }
+
+            return finalResult.Count > 0 ? finalResult : null;
         }
     }
 }

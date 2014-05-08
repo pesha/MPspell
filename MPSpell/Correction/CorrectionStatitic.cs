@@ -26,11 +26,11 @@ namespace MPSpell.Correction
 
         public void AddCorrection(MisspelledWord error)
         {
-            writer.WriteLine(error.WrongWord + ": " + error.CorrectWord);
+            writer.WriteLine(error.WrongWord + ";" + error.CorrectWord + ";" + error.RevokedByLm.ToString());
 
             if (!String.IsNullOrEmpty(error.CorrectWord))
             {
-                writerCorrected.WriteLine(error.WrongWord + ": " + error.CorrectWord + "\t\t" + error.Accuracy.ToString());
+                writerCorrected.WriteLine(error.WrongWord + ";" + error.CorrectWord + ";" + error.Accuracy.ToString() + ";" + error.CorrectedBy.ToString() +";" + error.IsName().ToString());
             }
         }
 

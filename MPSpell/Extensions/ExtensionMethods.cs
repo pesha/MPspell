@@ -10,6 +10,18 @@ namespace MPSpell.Extensions
     public static class ExtensionsMethods
     {
 
+        public static Dictionary<string, double> ToDictionary(this List<string> data, int defaultValue = 1)
+        {
+            Dictionary<string, double> result = new Dictionary<string, double>();
+
+            foreach (string item in data)
+            {
+                result.Add(item, defaultValue);
+            }
+
+            return result;
+        }
+
         public static void ShiftLeft(this BitArray array, bool newValue)
         {
             for (int i = 1; i < array.Count; i++)

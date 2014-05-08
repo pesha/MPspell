@@ -56,7 +56,7 @@ namespace MPSpellTests
 
             csCZ.Add("večeře");
             csCZ.Add("véčera");
-            csCZ.Add("věci");
+            csCZ.Add("věci");            
         }
 
         [TestMethod]
@@ -78,9 +78,9 @@ namespace MPSpellTests
             string word = "vecere";
 
             AccentModel model = new AccentModel(this.csCZ);
-            string result = model.AddAccent(word);
+            List<string> result = model.AddAccent(word);
 
-            Assert.AreEqual("večeře", result);
+            Assert.AreEqual("večeře", result[0]);
         }
 
 
