@@ -66,8 +66,9 @@ namespace MPSpell.Correction
             Stopwatch time = Stopwatch.StartNew();
 
             List<FileInfo>[] filesGroups = this.DivadeIntoGroups(2);
+            int count = this.FilesToProcess.Count > 1 ? filesGroups.Length : 1;
 
-            Task<CorrectionStatitic>[] tasks = new Task<CorrectionStatitic>[filesGroups.Length];
+            Task<CorrectionStatitic>[] tasks = new Task<CorrectionStatitic>[count];
             int id = 0;
             foreach (List<FileInfo> group in filesGroups)
             {
@@ -99,19 +100,41 @@ namespace MPSpell.Correction
 
                 using (FileChecker checker = new FileChecker(file.FullName, dictionary))
                 {
+                    Task<List<MisspelledWord>> task = null;
+                    List<MisspelledWord> errors = new List<MisspelledWord>();
                     while (!checker.EndOfCheck)
                     {
                         MisspelledWord error = checker.GetNextMisspelling();
                         if (null != error)
                         {
-                            corrector.Correct(error);
-                            stats.AddCorrection(error);
-
-                            if (error.CorrectWord != null)
-                            {
-                                handler.Push(error);
-                            }
+                            errors.Add(error);                            
                         }
+
+                        if (errors.Count > 1000 || checker.EndOfCheck)
+                        {
+                            if (task != null)
+                            {
+                                task.Wait();
+                                List<MisspelledWord> corrected = task.Result;
+                                foreach (MisspelledWord item in corrected)
+                                {
+                                    stats.AddCorrection(item);
+                                    if (item.CorrectWord != null)
+                                    {
+                                        handler.Push(item);
+                                    }
+                                }
+                            }
+
+                            List<MisspelledWord> errorBatch = errors;                            
+                            errors = new List<MisspelledWord>();
+
+                            task = Task<List<MisspelledWord>>.Factory.StartNew(() =>
+                            {
+                                return this.CorrectErrors(errorBatch);
+                            });
+                        }
+
                     }
                 }
 
@@ -122,6 +145,16 @@ namespace MPSpell.Correction
 
             stats.Close();
             return stats;
+        }
+
+        private List<MisspelledWord> CorrectErrors(List<MisspelledWord> errors)
+        {
+            foreach (MisspelledWord error in errors)
+            {
+                corrector.Correct(error);
+            }
+
+            return errors;
         }
 
         private void UpdateProgres(int files)
