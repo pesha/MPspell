@@ -3,6 +3,7 @@ using MPSpell.Extensions;
 using MPSpell.Check;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -16,7 +17,8 @@ namespace MPSpell.Correction
     {
 
         public List<FileInfo> FilesToProcess { get; private set; }
-        public bool PreserveSubfolders { get; set; }
+        public long CorrectionTime { get; private set; }
+        public bool PreserveSubfolders { get; set; }        
 
         private string directory;
         private string resultDirectory;
@@ -27,6 +29,11 @@ namespace MPSpell.Correction
         private IErrorModel errorModel;
 
         private Corrector corrector;
+
+        // temporary info
+        private int totalFiles;
+        private int processedFiles;
+        private BackgroundWorker worker;
 
         public FolderCorrector(Dictionary dictionary, string directory, string resultDirectory = null)
         {
@@ -49,9 +56,13 @@ namespace MPSpell.Correction
             PreserveSubfolders = true;
         }
 
-        public long RunCorrection()
+        public void RunCorrection(BackgroundWorker worker = null)
         {
+            this.worker = worker;
+
             dictionary.PreloadDictionaries();
+            this.totalFiles = this.FilesToProcess.Count;
+            this.processedFiles = 0;
             Stopwatch time = Stopwatch.StartNew();
 
             List<FileInfo>[] filesGroups = this.DivadeIntoGroups(2);
@@ -73,7 +84,7 @@ namespace MPSpell.Correction
 
             Task.WaitAll(tasks);            
 
-            return time.ElapsedMilliseconds;
+            this.CorrectionTime = time.ElapsedMilliseconds;
         }
 
         private CorrectionStatitic CorrectGroup(List<FileInfo> group, int id)
@@ -105,10 +116,21 @@ namespace MPSpell.Correction
                 }
 
                 handler.Close();
+
+                this.UpdateProgres(1);
             }
 
             stats.Close();
             return stats;
+        }
+
+        private void UpdateProgres(int files)
+        {
+            lock ("progress")
+            {
+                processedFiles += files;
+                worker.ReportProgress((this.processedFiles * 100)/this.totalFiles);
+            }
         }
 
         private List<FileInfo>[] DivadeIntoGroups(int groupCount)

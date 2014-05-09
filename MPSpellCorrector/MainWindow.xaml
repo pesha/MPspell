@@ -9,6 +9,7 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
         <DockPanel>
@@ -26,7 +27,7 @@
 
         <ToolBarTray Background="White" Grid.Row="1" Height="25">
             <ToolBar Band="1" BandIndex="1" Background="White">
-                <Button Click="Run_Button_Click">Run correction</Button>
+                <Button Name="RunButton" Click="Run_Button_Click" IsEnabled="False">Run correction</Button>
             </ToolBar>
         </ToolBarTray>
 
@@ -51,6 +52,10 @@
                 <TextBlock Grid.Column="1" Grid.Row="2" x:Name="RunningTime" />
                 
             </Grid>
+        </Grid>
+        
+        <Grid Grid.Row="3">
+            <ProgressBar x:Name="ProgressBar" Margin="20" HorizontalAlignment="Center" Height="26" VerticalAlignment="Top" Width="550" />
         </Grid>
 
     </Grid>
