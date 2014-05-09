@@ -90,5 +90,11 @@ namespace MPSpellCorrector
             window.Show();
         }
 
+        private void Report_MenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            ReportGeneratorWindow window = new ReportGeneratorWindow();
+            window.Show();
+        }
+
     }
 }

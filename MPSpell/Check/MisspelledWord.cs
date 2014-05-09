@@ -114,7 +114,7 @@ namespace MPSpell.Check
                 end = rightContext.Count;
             }
 
-            for (int i = this.errorPosition; i < end; i++)
+            for (int i = this.errorPosition; i <= end; i++)
             {
                 rightContext.Add(this.context[i].Word);
                 if (this.context[i].ContextEnd)

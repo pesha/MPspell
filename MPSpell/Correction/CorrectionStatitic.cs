@@ -10,19 +10,21 @@ using System.Threading.Tasks;
 namespace MPSpell.Correction
 {
 
-    class CorrectionStatitic
+    public class CorrectionStatitic
     {
 
         public string File { get; private set; }
         public string FileCorrected { get; private set; }
+        public bool ExportContext { get; private set; }
 
         private StreamWriter writer;
         private StreamWriter writerCorrected;
 
-        public CorrectionStatitic(string fileAll = null, string fileCorrected = null)
+        public CorrectionStatitic(string fileAll = null, string fileCorrected = null, bool exportContext = false)
         {
             this.File = (null != fileAll) ? fileAll : Path.GetTempFileName();
             this.FileCorrected = (null != fileCorrected) ? fileCorrected : Path.GetTempFileName();
+            this.ExportContext = exportContext;
 
             FileStream stream = new FileStream(this.File, FileMode.Create, FileAccess.Write);
             writer = new StreamWriter(stream, Encoding.UTF8);
@@ -33,11 +35,12 @@ namespace MPSpell.Correction
 
         public void AddCorrection(MisspelledWord error)
         {
-            writer.WriteLine(error.WrongWord + ";" + error.CorrectWord + ";" + error.RevokedByLm.ToString());
+            string context = ExportContext ? ";" + error.GetLeftContext().ToStringRepresentation() + ";" + error.GetRightContext().ToStringRepresentation() : ""; 
+            writer.WriteLine(error.WrongWord + ";" + error.CorrectWord + ";" + error.RevokedByLm.ToString() + context);
 
             if (!String.IsNullOrEmpty(error.CorrectWord))
             {
-                writerCorrected.WriteLine(error.WrongWord + ";" + error.CorrectWord + ";" + error.Accuracy.ToString() + ";" + error.CorrectedBy.ToString() +";" + error.IsName().ToString());
+                writerCorrected.WriteLine(error.WrongWord + ";" + error.CorrectWord + ";" + Math.Round(error.Accuracy,1).ToString() + ";" + error.CorrectedBy.ToString() +";" + error.IsName().ToString());
             }
         }
 
@@ -47,43 +50,7 @@ namespace MPSpell.Correction
             writerCorrected.Close();
         }
 
-        public void GenerateSummary()
-        {
-            this.Close();
 
-            Dictionary<string, long> occurences = new Dictionary<string, long>();
-            
-            char[] separator = new char[] { ';' };            
-
-            using (StreamReader reader = EncodingDetector.GetStreamWithEncoding(this.File))
-            {
-                while (!reader.EndOfStream)
-                {
-                    string line = reader.ReadLine();
-                    string[] parts = line.Split(separator);
-
-                    if (occurences.ContainsKey(parts[0]))
-                    {
-                        occurences[parts[0]] += 1;
-                    }
-                    else
-                    {
-                        occurences.Add(parts[0], 1);
-                    }
-                }
-            }
-
-            var sortedDict = from entry in occurences orderby entry.Value descending select entry;
-
-            using (StreamWriter writer = new StreamWriter(System.IO.File.OpenWrite("summary.txt"), Encoding.UTF8))
-            {
-                foreach (var pair in sortedDict)
-                {
-                    writer.WriteLine(pair.Key + ";" + pair.Value);
-                }
-            }
-            
-        }
 
     }
 

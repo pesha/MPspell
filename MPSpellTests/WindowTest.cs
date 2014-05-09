@@ -20,7 +20,7 @@ namespace MPSpellTests
             window.Add(new Token("was"));
             window.Add(new Token("ona", false, new string[] { "", "ona", "" }, 7));
             window.Add(new Token("holiday"));
-            window.Add(new Token('.', true));
+            window.Add(new Token("new", true));
             MisspelledWord word = window.GetMisspelledWord();
             Assert.AreEqual("ona", word.WrongWord);
 
@@ -30,7 +30,7 @@ namespace MPSpellTests
             CollectionAssert.AreEqual(lcCorrect, lc);
             
             List<string> rc = word.GetRightContext();
-            List<string> rcCorrect = new List<string>() { "ona", "holiday" };
+            List<string> rcCorrect = new List<string>() { "ona", "holiday", "new" };
 
             CollectionAssert.AreEqual(rcCorrect, rc);            
         }

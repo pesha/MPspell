@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace MPSpell.Extensions
 {
-    class EncodingDetector
+    public class EncodingDetector
     {
 
         public static StreamReader GetStreamWithEncoding(string file)

@@ -22,6 +22,7 @@ namespace MPSpell.Correction
 
         private string directory;
         private string resultDirectory;
+        private string summaryDirectory;
         private List<string> allowedExtensions = new List<string>() { ".txt", "" };
         private Dictionary dictionary;
         private ILanguageModel languageModel;
@@ -35,9 +36,11 @@ namespace MPSpell.Correction
         private int processedFiles;
         private BackgroundWorker worker;
 
-        public FolderCorrector(Dictionary dictionary, string directory, string resultDirectory = null)
+        public FolderCorrector(Dictionary dictionary, string directory, string resultDirectory = null, string summaryDirectory = null)
         {
             this.directory = directory;
+            this.summaryDirectory = summaryDirectory;
+
             this.dictionary = dictionary;
 
             // setup models
@@ -83,14 +86,25 @@ namespace MPSpell.Correction
                 }                
             }
 
-            Task.WaitAll(tasks);            
+            Task.WaitAll(tasks);
+
+            time.Stop();
+
+            List<CorrectionStatitic> stats = new List<CorrectionStatitic>();
+            foreach (Task<CorrectionStatitic> task in tasks)
+            {
+                stats.Add(task.Result);
+            }
+
+            CorrectionSummary summary = new CorrectionSummary("all.txt", "corrected.txt", "counts.txt", CorrectionSummary.GetResultFolder());
+            summary.MergeStats(stats);
 
             this.CorrectionTime = time.ElapsedMilliseconds;
         }
 
         private CorrectionStatitic CorrectGroup(List<FileInfo> group, int id)
         {
-            CorrectionStatitic stats = new CorrectionStatitic();
+            CorrectionStatitic stats = new CorrectionStatitic(null, null, true);
 
             foreach (FileInfo file in group)
             {

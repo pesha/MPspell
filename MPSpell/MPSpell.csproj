@@ -54,6 +54,7 @@
     <Compile Include="Check\Token.cs" />
     <Compile Include="Correction\AccentModel.cs" />
     <Compile Include="Correction\CorrectionStatitic.cs" />
+    <Compile Include="Correction\CorrectionSummary.cs" />
     <Compile Include="Correction\FileCorrectionHandler.cs" />
     <Compile Include="Correction\FileHandler.cs" />
     <Compile Include="Correction\IAccentModel.cs" />

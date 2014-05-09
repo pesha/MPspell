@@ -22,6 +22,18 @@ namespace MPSpell.Extensions
             return result;
         }
 
+        public static string ToStringRepresentation(this List<string> list, string separator = ",")
+        {
+            string res = String.Empty;
+
+            foreach (string item in list)
+            {
+                res += item + separator;
+            }
+
+            return res.Length > 0 ? res.Substring(0, res.Length - separator.Length) : "";
+        }
+
         public static void ShiftLeft(this BitArray array, bool newValue)
         {
             for (int i = 1; i < array.Count; i++)
