@@ -65,7 +65,7 @@ namespace MPSpellTests
 
             List<string> testErrors = new List<string>() { "error", "detection" };
             CollectionAssert.AreEqual(testErrors, errors);            
-        }
+        }        
 
     }
 }

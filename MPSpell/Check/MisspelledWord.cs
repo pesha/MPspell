@@ -93,12 +93,12 @@ namespace MPSpell.Check
             }
             for (int i = start; i <= this.errorPosition; i++)
             {
+                leftContext.Add(this.context[i].Word);
+                
                 if (this.context[i].ContextEnd)
                 {
-                    leftContext = new List<string>();                    
+                    leftContext = new List<string>();
                 }
-
-                leftContext.Add(this.context[i].Word);
             }
 
             return leftContext;
@@ -115,15 +115,26 @@ namespace MPSpell.Check
             }
 
             for (int i = this.errorPosition; i <= end; i++)
-            {
+            {                
                 rightContext.Add(this.context[i].Word);
+                
                 if (this.context[i].ContextEnd)
                 {
                     break;
-                }                
+                }
             }
 
             return rightContext;
+        }
+
+        public bool AreNeighborsInContext()
+        {
+            if (this.context[1].ContextEnd == true && this.context[2].ContextEnd == true)
+            {
+                return false;
+            }
+
+            return true;
         }
 
 

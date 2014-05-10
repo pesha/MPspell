@@ -19,10 +19,12 @@ namespace MPSpellTests
             window.Add(new Token("i"));
             window.Add(new Token("was"));
             window.Add(new Token("ona", false, new string[] { "", "ona", "" }, 7));
-            window.Add(new Token("holiday"));
-            window.Add(new Token("new", true));
+            window.Add(new Token("holiday", true));
+            window.Add(new Token("new"));
             MisspelledWord word = window.GetMisspelledWord();
             Assert.AreEqual("ona", word.WrongWord);
+
+            Assert.IsTrue(word.AreNeighborsInContext());
 
             List<string> lc = word.GetLeftContext();
             List<string> lcCorrect = new List<string>() { "i", "was", "ona" };
@@ -30,9 +32,102 @@ namespace MPSpellTests
             CollectionAssert.AreEqual(lcCorrect, lc);
             
             List<string> rc = word.GetRightContext();
-            List<string> rcCorrect = new List<string>() { "ona", "holiday", "new" };
+            List<string> rcCorrect = new List<string>() { "ona", "holiday" };
 
-            CollectionAssert.AreEqual(rcCorrect, rc);            
+            CollectionAssert.AreEqual(rcCorrect, rc);
+
+            window = new Window();
+            window.Add(new Token("is"));
+            window.Add(new Token("end", true));
+            window.Add(new Token("report", false, new string[] { "", "report", "" }, 7));
+            window.Add(new Token("New", true));
+            window.Add(new Token("Day"));
+
+            MisspelledWord error = window.GetMisspelledWord();
+
+            List<string> lcACorrect = new List<string>() { "report" };
+            List<string> rcACorrect = new List<string>() { "report", "New" };
+
+            var lcA = error.GetLeftContext();
+            var rcA = error.GetRightContext();
+
+            CollectionAssert.AreEqual(lcACorrect, lcA);
+            CollectionAssert.AreEqual(rcACorrect, rcA);
+        }
+
+        [TestMethod]
+        public void ContextEndTest()
+        {
+            Window window = new Window();
+            window.Add(new Token("is"));
+            window.Add(new Token("end", true));
+            window.Add(new Token("report", true, new string[] { "", "report", "" }, 7));
+            window.Add(new Token("New"));
+            window.Add(new Token("Day", true));
+
+            MisspelledWord error = window.GetMisspelledWord();
+            Assert.IsNull(error);
+        }
+
+        [TestMethod]
+        public void LanguageDetectionTest()
+        {
+            Window window = new Window();
+            window.Add(new Token("is", false, new string[] { "", "is", "" }, 7));
+            window.Add(new Token("end", false, new string[] { "", "end", "" }, 7));
+            window.Add(new Token("report", true, new string[] { "", "report", "" }, 7));
+            window.Add(new Token("New", false, new string[] { "", "New", "" }, 7));
+            window.Add(new Token("Day"));
+
+            Assert.IsNull(window.GetMisspelledWord());
+
+            window.Add(new Token("aa"));
+
+            Assert.IsNotNull(window.GetMisspelledWord());
+        }
+
+        [TestMethod]
+        public void ErrorsInNeighborsTest()
+        {
+            Window window = new Window();
+            window.Add(new Token("is"));
+            window.Add(new Token("end", false, new string[] { "", "end", "" }, 7));
+            window.Add(new Token("report", true, new string[] { "", "report", "" }, 7));
+            window.Add(new Token("New", false, new string[] { "", "New", "" }, 7));
+            window.Add(new Token("Day"));
+
+            Assert.IsNull(window.GetMisspelledWord());
+
+            window = new Window();
+            window.Add(new Token("is"));
+            window.Add(new Token("end"));
+            window.Add(new Token("report", true, new string[] { "", "report", "" }, 7));
+            window.Add(new Token("New", false, new string[] { "", "New", "" }, 7));
+            window.Add(new Token("Day"));
+
+            MisspelledWord error = window.GetMisspelledWord();
+            Assert.IsNotNull(error);
+            Assert.IsTrue(error.AreNeighborsInContext());
+
+            window = new Window();
+            window.Add(new Token("is"));
+            window.Add(new Token("end"));
+            window.Add(new Token("New", false, new string[] { "", "New", "" }, 7));
+            window.Add(new Token("report", true, new string[] { "", "report", "" }, 7));            
+            window.Add(new Token("Day"));
+
+            error = window.GetMisspelledWord();
+            Assert.IsNotNull(error);
+            Assert.IsTrue(error.AreNeighborsInContext());
+
+            window = new Window();
+            window.Add(new Token("is"));
+            window.Add(new Token("end"));
+            window.Add(new Token("New", false, new string[] { "", "New", "" }, 7));
+            window.Add(new Token("report"));
+            window.Add(new Token("Day", true, new string[] { "", "report", "" }, 7));
+            error = window.GetMisspelledWord();
+            Assert.IsNotNull(error);
         }
 
         [TestMethod]

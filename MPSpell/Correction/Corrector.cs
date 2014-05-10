@@ -47,7 +47,7 @@ namespace MPSpell.Correction
                 candidates = this.errorModel.GeneratePossibleWords(misspelling.WrongWord);
             }
 
-            if (candidates.Count > 0)
+            if (candidates.Count > 1)
             {
                 double totalProps = 0;
                 LanguageModelEvaluation evaluation = this.languageModel.EvaluateCandidates(misspelling, candidates);

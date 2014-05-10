@@ -89,9 +89,12 @@ namespace MPSpell.Dictionaries
         {
             List<string> alphabet = new List<string>();
             alphabet.AddRange(this.GetAlphabetAsString());
-            foreach (char chr in specialCharsInsideWord)
+            if (specialCharsInsideWord != null)
             {
-                alphabet.Add(chr.ToString());
+                foreach (char chr in specialCharsInsideWord)
+                {
+                    alphabet.Add(chr.ToString());
+                }
             }
             if (withSpace)
             {
