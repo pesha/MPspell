@@ -42,5 +42,15 @@ namespace MPSpell.Dictionaries
             return null;
         }
 
+        public string[] GetAlphabetForErrorModel(bool withSpace = false)
+        {
+            return this.GetAlphabetAsString();
+        }
+
+        public char[] GetSpecialCharsInsideWord()
+        {
+            return new char[] { };
+        }
+
     }
 }

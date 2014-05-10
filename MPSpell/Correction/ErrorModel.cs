@@ -11,12 +11,14 @@ namespace MPSpell.Correction
     {
 
         private string[] alphabet;
-        private IDictionary dictionary;
+        private char[] specialChars;
+        private IDictionary dictionary;       
 
         public ErrorModel(IDictionary dictionary)
         {
             this.dictionary = dictionary;
-            this.alphabet = dictionary.GetAlphabetAsString();
+            this.alphabet = dictionary.GetAlphabetForErrorModel(false);
+            this.specialChars = dictionary.GetSpecialCharsInsideWord();
         }
 
         private double CalculateProbability(EditOperation operation, char x, char y)
@@ -26,7 +28,14 @@ namespace MPSpell.Correction
             switch (operation)
             {
                 case EditOperation.Insertion:
-                    output = (double) dictionary.GetConfusionFrequency(x,y, EditOperation.Insertion) / dictionary.GetOneCharFrequency(x.ToString());
+                    if (this.specialChars.Contains(y))
+                    {
+                        output = 1;
+                    }
+                    else
+                    {
+                        output = (double)dictionary.GetConfusionFrequency(x, y, EditOperation.Insertion) / dictionary.GetOneCharFrequency(x.ToString());
+                    }
                     break;
 
                 case EditOperation.Deletion:

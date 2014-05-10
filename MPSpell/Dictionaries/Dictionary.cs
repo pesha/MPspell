@@ -14,10 +14,11 @@ namespace MPSpell.Dictionaries
 
         public string Name { get; private set; }
         public char[] Alphabet { get; private set; }
-        public char[] SpecialCharsInsideWord { get; private set; }
 
+        
         private string path;
         private string wordBoundaryRegex;
+        private char[] specialCharsInsideWord;
         private bool isDictionaryLoaded = false;
         private Dictionary<char, List<char>> accentPairs;
         private Dictionary<DictionaryFileType, string> files = new Dictionary<DictionaryFileType, string>();
@@ -28,16 +29,21 @@ namespace MPSpell.Dictionaries
 
         private DictionaryNode dictionary = new DictionaryNode();
 
+        // cache
+        private char[] AlphabetWithSpecialCharsCache;
+
         public Dictionary(DictionaryLoader loader, string name, string path, char[] alphabet, char[] specialChars = null, string wordBoundaryRegex = null, Dictionary<char, List<char>> accentPairs = null)
         {
             Name = name;
             Alphabet = alphabet;
-            SpecialCharsInsideWord = specialChars;
+            specialCharsInsideWord = specialChars;
 
             this.path = path;
             this.wordBoundaryRegex = wordBoundaryRegex;
             this.accentPairs = accentPairs;
             this.loader = loader;
+
+            this.AlphabetWithSpecialCharsCache = this.GetAlphabetForErrorModel().ToCharArray();
         }
 
         public bool IsAccentModelAvailable()
@@ -74,11 +80,16 @@ namespace MPSpell.Dictionaries
             return Alphabet.ToStringArray();
         }
 
+        public char[] GetSpecialCharsInsideWord()
+        {
+            return specialCharsInsideWord;
+        }
+
         public string[] GetAlphabetForErrorModel(bool withSpace = false)
         {
             List<string> alphabet = new List<string>();
             alphabet.AddRange(this.GetAlphabetAsString());
-            foreach (char chr in SpecialCharsInsideWord)
+            foreach (char chr in specialCharsInsideWord)
             {
                 alphabet.Add(chr.ToString());
             }
@@ -115,7 +126,7 @@ namespace MPSpell.Dictionaries
 
         public int GetConfusionFrequency(char x, char y, EditOperation operation)
         {
-            if (this.Alphabet.Contains(x) && this.Alphabet.Contains(y))
+            if (this.AlphabetWithSpecialCharsCache.Contains(x) && this.AlphabetWithSpecialCharsCache.Contains(y))
             {
                 return matrixes[operation].GetValue(x, y);
             }

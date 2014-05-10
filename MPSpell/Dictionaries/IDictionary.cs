@@ -12,6 +12,8 @@ namespace MPSpell.Dictionaries
 
         bool FindWord(string word);
         string[] GetAlphabetAsString();
+        string[] GetAlphabetForErrorModel(bool withSpace = false);
+        char[] GetSpecialCharsInsideWord();
         int GetConfusionFrequency(char x, char y, EditOperation operation);
         int GetOneCharFrequency(string str);
         int GetTwoCharFrequency(string str);
