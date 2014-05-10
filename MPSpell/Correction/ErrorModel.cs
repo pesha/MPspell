@@ -10,14 +10,17 @@ namespace MPSpell.Correction
     public class ErrorModel : IErrorModel
     {
 
+        private readonly char[] space = new char[] { ' ' };
         private string[] alphabet;
+        private string[] alphabetWithSpace;
         private char[] specialChars;
         private IDictionary dictionary;       
 
         public ErrorModel(IDictionary dictionary)
         {
             this.dictionary = dictionary;
-            this.alphabet = dictionary.GetAlphabetForErrorModel(false);
+            this.alphabet = dictionary.GetAlphabetForErrorModel();
+            this.alphabetWithSpace = dictionary.GetAlphabetForErrorModel(true);
             this.specialChars = dictionary.GetSpecialCharsInsideWord();
         }
 
@@ -101,14 +104,35 @@ namespace MPSpell.Correction
                 }
             }
 
-
+            bool found = false;
             // insertions
             for (int i = 0; i <= word.Length; i++)
             {
-                foreach (string item in alphabet)
+                foreach (string item in alphabetWithSpace)
                 {
+
                     string edited = String.Copy(word).Insert(i, item);
-                    if (dictionary.FindWord(edited))
+                    if (item == " ")
+                    {
+                        string tr = edited.Trim();
+                        if (tr != word)
+                        {
+                            string[] parts = tr.Split(space);
+                            foreach (string part in parts)
+                            {
+                                if (dictionary.FindWord(part))
+                                {
+                                    found = true;
+                                }
+                                else
+                                {
+                                    found = false;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    if (found || dictionary.FindWord(edited))
                     {
                         char prev = (i - 1) < 0 ? ' ' : word[i-1];
                         double prop = this.CalculateProbability(EditOperation.Insertion, prev, item[0]);
@@ -120,7 +144,9 @@ namespace MPSpell.Correction
                         {
                             result[edited] = prop;
                         }
-                    }
+
+                        found = false;
+                    }                    
                 }
             }
 

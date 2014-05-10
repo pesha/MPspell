@@ -49,7 +49,7 @@ namespace MPSpell.Correction
             this.accentModel = dictionary.IsAccentModelAvailable() ? new AccentModel(dictionary) : null;
 
             // setup corrector
-            this.corrector = new Corrector(errorModel, languageModel, accentModel, true);
+            this.corrector = new Corrector(errorModel, languageModel, accentModel);
 
             // prepare files and folders
             this.FilesToProcess = this.AnalyzeDir(new DirectoryInfo(directory));

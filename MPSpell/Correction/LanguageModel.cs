@@ -11,7 +11,7 @@ namespace MPSpell.Correction
 
     public class LanguageModelEvaluation
     {
-
+        
         public Dictionary<string, double> Probabilities { get; private set; }
         public bool FoundInNgrams { get; private set; }
 
@@ -26,6 +26,7 @@ namespace MPSpell.Correction
     public class LanguageModel : ILanguageModel
     {
 
+        private readonly char[] space = new char[] { ' ' };
         private Dictionary dictionary;
         private bool foundInNgrams;
 
@@ -47,7 +48,7 @@ namespace MPSpell.Correction
             NgramEvaluation evaluation;
             foreach (KeyValuePair<string, double> option in candidates)
             {
-                lcArray[leftContext.Count - 1] = option.Key;
+                lcArray[leftContext.Count - 1] = option.Key.Contains(' ') ? option.Key.Split(space).First() : option.Key;
 
                 evaluation = this.dictionary.GetNgramCollection(type).GetProbability(lcArray);
                 probability.Add(option.Key, evaluation.Probability);
@@ -70,7 +71,7 @@ namespace MPSpell.Correction
                 string[] rcArray = this.GetRightContext(rightContext, secType);
                 foreach (KeyValuePair<string, double> option in candidates)
                 {
-                    rcArray[0] = option.Key;
+                    rcArray[0] = option.Key.Contains(' ') ? option.Key.Split(space).Last() : option.Key;
 
                     evaluation = this.dictionary.GetNgramCollection(secType).GetProbability(rcArray);
                     probability[option.Key] *= evaluation.Probability;

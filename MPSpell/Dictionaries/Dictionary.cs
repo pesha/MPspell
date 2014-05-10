@@ -43,7 +43,7 @@ namespace MPSpell.Dictionaries
             this.accentPairs = accentPairs;
             this.loader = loader;
 
-            this.AlphabetWithSpecialCharsCache = this.GetAlphabetForErrorModel().ToCharArray();
+            this.AlphabetWithSpecialCharsCache = this.GetAlphabetForErrorModel(true).ToCharArray();
         }
 
         public bool IsAccentModelAvailable()
