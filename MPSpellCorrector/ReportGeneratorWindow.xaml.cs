@@ -23,6 +23,16 @@ namespace MPSpellCorrector
     public partial class ReportGeneratorWindow : Window
     {
 
+        enum Step
+        {
+            NotMistake,
+            MissingCorrection,
+            CorrectCorrection,
+            WrongCorrection,
+            WrongDueDictionary,
+            WrongDueLanguage,
+        }
+
         private readonly char[] separator = new char[] { ';' };
         private readonly char[] contextSeparator = new char[] { ',' };
         StreamReader reader;
@@ -31,6 +41,11 @@ namespace MPSpellCorrector
         private int missingCorrection;
         private int correctCorrection;
         private int wrongCorrection;
+        private int wrongDueDictionary;
+        private int wrongDueLanguage;
+
+        private Step lastStep;
+        private string[] line;
 
         public ReportGeneratorWindow()
         {
@@ -71,7 +86,7 @@ namespace MPSpellCorrector
 
         }
 
-        private void ShowNext()
+        private void ShowNext(bool stepBack = false)
         {
             if (!reader.EndOfStream)
             {
@@ -80,7 +95,20 @@ namespace MPSpellCorrector
                 this.CorrectCorrectionButton.IsEnabled = true;
                 this.NotMistakeButton.IsEnabled = true;
                 this.MissingCorrectionButton.IsEnabled = true;
-                string[] parts = reader.ReadLine().Split(separator);
+                this.WrongDueDictionaryButton.IsEnabled = true;
+                this.WrongDueLanguageButton.IsEnabled = true;
+
+                string[] parts;
+                if (stepBack)
+                {
+                    parts = this.line;
+                }
+                else
+                {
+                    parts = reader.ReadLine().Split(separator);
+                    this.line = parts;
+                }
+
                 this.PreviousWord.Text = parts[0];
 
                 if (String.IsNullOrEmpty(parts[1]))
@@ -88,6 +116,8 @@ namespace MPSpellCorrector
                     this.MistakeTextBox.Background = Brushes.Pink;
                     this.WrongCorrectionButton.IsEnabled = false;
                     this.CorrectCorrectionButton.IsEnabled = false;
+                    this.WrongDueDictionaryButton.IsEnabled = false;
+                    this.WrongDueLanguageButton.IsEnabled = false;
                 }
                 else
                 {
@@ -116,12 +146,13 @@ namespace MPSpellCorrector
                 }
 
                 this.LeftContextTextBox.Text = lc;
-                this.RightContextTextBox.Text = rc;
+                this.RightContextTextBox.Text = rc;                
             }
         }
 
         private void NotMistake_Button_Click(object sender, RoutedEventArgs e)
         {
+            lastStep = Step.NotMistake;
             notMistake += 1;
             this.NotMistakeTextBlock.Text = notMistake.ToString();
 
@@ -130,6 +161,7 @@ namespace MPSpellCorrector
 
         private void CorrectCorrection_Button_Click(object sender, RoutedEventArgs e)
         {
+            lastStep = Step.CorrectCorrection;
             correctCorrection += 1;
             this.CorrectCorrectionTextBlock.Text = correctCorrection.ToString();
 
@@ -138,6 +170,7 @@ namespace MPSpellCorrector
 
         private void WrongCorrection_Button_Click(object sender, RoutedEventArgs e)
         {
+            lastStep = Step.WrongCorrection;
             wrongCorrection += 1;
             this.WrongCorrectionTextBlock.Text = wrongCorrection.ToString();
 
@@ -146,10 +179,63 @@ namespace MPSpellCorrector
 
         private void MissingCorrection_Button_Click(object sender, RoutedEventArgs e)
         {
+            lastStep = Step.MissingCorrection;
             missingCorrection += 1;
             this.MissingCorrectionTextBlock.Text = missingCorrection.ToString();
 
             this.ShowNext();
+        }
+
+        private void WrongDueDictionary_Button_Click(object sender, RoutedEventArgs e)
+        {
+            lastStep = Step.WrongDueDictionary;
+            wrongDueDictionary += 1;
+            this.WrongDueDictionaryTextBlock.Text = wrongDueDictionary.ToString();
+
+            this.ShowNext();
+        }
+
+        private void WrongDueLanguage_Button_Click(object sender, RoutedEventArgs e)
+        {
+            lastStep = Step.WrongDueLanguage;
+            wrongDueLanguage += 1;
+            this.WrongDueLanguageTextBlock.Text = wrongDueLanguage.ToString();
+
+            this.ShowNext();
+        }
+
+        private void StepBack_Button_Click(object sender, RoutedEventArgs e)
+        {
+            switch (this.lastStep)
+            {
+                case Step.CorrectCorrection:
+                    correctCorrection -= 1;
+                    this.CorrectCorrectionTextBlock.Text = correctCorrection.ToString();
+                    break;
+                case Step.MissingCorrection:
+                    missingCorrection -= 1;
+                    this.MissingCorrectionTextBlock.Text = missingCorrection.ToString();
+                    break;
+                case Step.NotMistake:
+                    notMistake -= 1;
+                    this.NotMistakeTextBlock.Text = notMistake.ToString();
+                    break;
+                case Step.WrongCorrection:
+                    wrongCorrection -= 1;
+                    this.WrongCorrectionTextBlock.Text = wrongCorrection.ToString();
+                    break;
+                case Step.WrongDueDictionary:
+                    wrongDueDictionary -= 1;
+                    this.WrongDueDictionaryTextBlock.Text = wrongDueDictionary.ToString();
+                    break;
+                case Step.WrongDueLanguage:
+                    wrongDueLanguage -= 1;
+                    this.WrongDueLanguageTextBlock.Text = wrongDueLanguage.ToString();
+                    break;
+
+            }
+
+            this.ShowNext(true);
         }
 
 

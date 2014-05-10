@@ -53,6 +53,26 @@ namespace MPSpellTests
 
             CollectionAssert.AreEqual(lcACorrect, lcA);
             CollectionAssert.AreEqual(rcACorrect, rcA);
+
+
+            window = new Window();
+            window.Add(new Token("attention"));
+            window.Add(new Token("to"));
+            window.Add(new Token("detail", true, new string[] { "", "detail", "" }, 9950));
+            window.Add(new Token("New"));
+            window.Add(new Token("Day"));
+
+            error = window.GetMisspelledWord();
+
+            var lcB = error.GetLeftContext();
+            var rcB = error.GetRightContext();
+
+            List<string> lcBCorrect = new List<string>() { "attention", "to", "detail" };
+            List<string> rcBCorrect = new List<string>() { "detail" };
+
+            CollectionAssert.AreEqual(lcBCorrect, lcB);
+            CollectionAssert.AreEqual(rcBCorrect, rcB);
+
         }
 
         [TestMethod]

@@ -1,9 +1,10 @@
 ﻿<Window x:Class="MPSpellCorrector.ReportGeneratorWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="ReportGeneratorWindow" Height="300" Width="500">
+        Title="ReportGeneratorWindow" Height="300" Width="680">
     <Grid Margin="10">
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
@@ -31,18 +32,22 @@
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="4*" />
-                <ColumnDefinition Width="4*" />
-                <ColumnDefinition Width="4*" />
-                <ColumnDefinition Width="4*" />
+                <ColumnDefinition Width="5*" />
+                <ColumnDefinition Width="5*" />
+                <ColumnDefinition Width="5*" />
+                <ColumnDefinition Width="5*" />
+                <ColumnDefinition Width="5*" />
+                <ColumnDefinition Width="5*" />
             </Grid.ColumnDefinitions>
 
             <Button x:Name="NotMistakeButton" Content="Not mistake" Width="100" Click="NotMistake_Button_Click" />
             <Button x:Name="MissingCorrectionButton" Grid.Column="1" Content="Missing correction" Width="100" Click="MissingCorrection_Button_Click" />
             <Button x:Name="CorrectCorrectionButton" Grid.Column="2" Content="Correct correction" Width="100" Click="CorrectCorrection_Button_Click" />
-            <Button x:Name="WrongCorrectionButton" Grid.Column="3" Content="Wrong correction" Width="100" Click="WrongCorrection_Button_Click" />            
+            <Button x:Name="WrongCorrectionButton" Grid.Column="3" Content="Wrong correction" Width="100" Click="WrongCorrection_Button_Click" />
+            <Button x:Name="WrongDueDictionaryButton" Grid.Column="4" Content="Wrong due dictionary" Width="100" Click="WrongDueDictionary_Button_Click" />
+            <Button x:Name="WrongDueLanguageButton" Grid.Column="5" Content="Wrong due language" Width="100" Click="WrongDueLanguage_Button_Click" />
 
-            <StackPanel HorizontalAlignment="Center" Grid.Row="1" Grid.ColumnSpan="4">
+            <StackPanel HorizontalAlignment="Center" Grid.Row="1" Grid.ColumnSpan="6">
                 <TextBox x:Name="PreviousWord" Foreground="Green" Width="200" Margin="5" TextAlignment="Center" />
             </StackPanel>
             
@@ -50,9 +55,14 @@
             <TextBlock Grid.Row="2" Grid.Column="1" x:Name="MissingCorrectionTextBlock" TextAlignment="Center" />
             <TextBlock Grid.Row="2" Grid.Column="2" x:Name="CorrectCorrectionTextBlock" TextAlignment="Center" />
             <TextBlock Grid.Row="2" Grid.Column="3" x:Name="WrongCorrectionTextBlock" TextAlignment="Center" />
+            <TextBlock Grid.Row="2" Grid.Column="4" x:Name="WrongDueDictionaryTextBlock" TextAlignment="Center" />
+            <TextBlock Grid.Row="2" Grid.Column="5" x:Name="WrongDueLanguageTextBlock" TextAlignment="Center" />
             
 
         </Grid>
+        <StackPanel Grid.Row="3" HorizontalAlignment="Left">
+            <Button Content="Step back" Click="StepBack_Button_Click" Width="100" />
+        </StackPanel>
 
     </Grid>
 </Window>

@@ -95,7 +95,7 @@ namespace MPSpell.Check
             {
                 leftContext.Add(this.context[i].Word);
                 
-                if (this.context[i].ContextEnd)
+                if (this.context[i].ContextEnd && i != this.errorPosition)
                 {
                     leftContext = new List<string>();
                 }
