@@ -19,10 +19,10 @@ namespace MPSpell.Check
         protected int lastStart = 0;
         protected int currentPos = 0;
 
-        private Regex rg;
-        private Regex containSpecial = new Regex(@"([-]+)", RegexOptions.Compiled);
-        private Regex tokenWithAlphanum = new Regex(@"([a-z\d]+)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-        private Regex abbreviation = new Regex("([A-Z]{2,})", RegexOptions.Compiled);
+        protected Regex rg;
+        protected Regex containSpecial = new Regex(@"([-]+)", RegexOptions.Compiled);
+        protected Regex tokenWithAlphanum = new Regex(@"([a-z\d]+)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+        protected Regex abbreviation = new Regex("([A-Z]{2,})", RegexOptions.Compiled);
 
         public Tokenizer(IDictionary dict)
         {
@@ -72,7 +72,7 @@ namespace MPSpell.Check
                                 skipDetection = true;
                             }
 
-                            if (containSpecial.Match(pureWord).Success || abbreviation.Match(wordContext[1]).Success || this.IsPropablyName(wordContext[1]))
+                            if (containSpecial.Match(pureWord).Success || abbreviation.Match(wordContext[1]).Success || this.IsProbablyName(wordContext[1]))
                             {
                                 skipDetection = true;
                             }                            
@@ -127,7 +127,7 @@ namespace MPSpell.Check
             return misspelling;
         }
 
-        protected bool IsPropablyName(string word)
+        protected bool IsProbablyName(string word)
         {
             if (lastToken != null && word != String.Empty)
             {

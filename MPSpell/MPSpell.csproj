@@ -107,6 +107,7 @@
     <Compile Include="Tools\LineParsers\HCLineParser.cs" />
     <Compile Include="Tools\SimpleFileLoader.cs" />
     <Compile Include="Tools\TwoCharFrequencyCounter.cs" />
+    <Compile Include="Tools\UniqueWordsCounter.cs" />
     <Compile Include="Tools\WordFrequencyCounter.cs" />
     <Compile Include="Utils.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
