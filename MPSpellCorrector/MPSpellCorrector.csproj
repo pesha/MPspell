@@ -73,6 +73,9 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Class\Project.cs" />
+    <Compile Include="DictionaryCreatorWindow.xaml.cs">
+      <DependentUpon>DictionaryCreatorWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ReportGeneratorWindow.xaml.cs">
       <DependentUpon>ReportGeneratorWindow.xaml</DependentUpon>
     </Compile>
@@ -81,6 +84,10 @@
     </Compile>
     <Compile Include="ViewModels\WizardViewModel.cs" />
     <Page Include="CorrectionWizard.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="DictionaryCreatorWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

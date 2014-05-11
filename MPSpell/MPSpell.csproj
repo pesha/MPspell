@@ -105,6 +105,7 @@
     <Compile Include="Tools\ErrorModel\TranspositionsMatrixGenerator.cs" />
     <Compile Include="Tools\ICorporaOutputHandler.cs" />
     <Compile Include="Tools\LineParsers\HCLineParser.cs" />
+    <Compile Include="Tools\SimpleFileLoader.cs" />
     <Compile Include="Tools\TwoCharFrequencyCounter.cs" />
     <Compile Include="Tools\WordFrequencyCounter.cs" />
     <Compile Include="Utils.cs" />

@@ -1,8 +1,10 @@
 ﻿using MPSpell.Correction;
+using MPSpell.Tools;
 using MPSpellCorrector.Class;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -44,6 +46,15 @@ namespace MPSpellCorrector
         public void PrepareProject()
         {
             Project project = Container.Project;
+            if (!String.IsNullOrEmpty(project.CustomDictionary) && File.Exists(project.CustomDictionary))
+            {
+                List<string> extensionDict = SimpleFileLoader.Load(project.CustomDictionary);
+                if (extensionDict.Count > 0)
+                {
+                    project.Dictionary.AddRange(extensionDict);
+                }
+            }
+
             corrector = new FolderCorrector(project.Dictionary, project.FolderPath, project.DestinationPath);
 
             // todo udelat viewmodel
@@ -93,6 +104,12 @@ namespace MPSpellCorrector
         private void Report_MenuItem_Click(object sender, RoutedEventArgs e)
         {
             ReportGeneratorWindow window = new ReportGeneratorWindow();
+            window.Show();
+        }
+
+        private void DictionaryGen_MenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            DictionaryCreatorWindow window = new DictionaryCreatorWindow();
             window.Show();
         }
 

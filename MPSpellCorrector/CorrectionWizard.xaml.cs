@@ -74,5 +74,27 @@ namespace MPSpellCorrector
             }
         }
 
+        private void CustomDictionary_Button_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog fileDialog = new OpenFileDialog();
+
+            fileDialog.InitialDirectory = @"C:\";
+            fileDialog.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
+            fileDialog.FilterIndex = 2;
+            fileDialog.RestoreDirectory = true;
+
+            if (fileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                try
+                {
+                    project.CustomDictionary = fileDialog.FileName;                    
+                }
+                catch (Exception ex)
+                {
+                    System.Windows.MessageBox.Show("Error: Could not read file from disk.");
+                }
+            }
+        }
+
     }
 }

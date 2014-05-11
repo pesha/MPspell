@@ -13,6 +13,7 @@ namespace MPSpellCorrector.Class
         public Dictionary Dictionary { get; set; }
         public string FolderPath { get; set; }
         public string DestinationPath { get; set; }
+        public string CustomDictionary { get; set; }
 
     }
 }

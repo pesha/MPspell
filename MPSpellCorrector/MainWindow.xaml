@@ -20,6 +20,7 @@
                 </MenuItem>
                 <MenuItem Header="_Tools">
                     <MenuItem Header="_Settings" Click="Settings_MenuItem_Click"/>
+                    <MenuItem Header="_Dictionary generator" Click="DictionaryGen_MenuItem_Click" />
                     <MenuItem Header="_Report generator" Click="Report_MenuItem_Click" />
                 </MenuItem>
             </Menu>

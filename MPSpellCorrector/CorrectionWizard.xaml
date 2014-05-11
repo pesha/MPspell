@@ -11,13 +11,23 @@
                                    NextPage="{Binding ElementName=Page2}"
                                    >
 
-                <Grid>
+                <Grid Margin="10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="Select dictionary:" />
-                        <ComboBox Height="20" Width="120" ItemsSource="{Binding Path=Dictionaries}"
+                        <ComboBox Height="20" Width="120" Margin="10,0,0,0"
+                                  ItemsSource="{Binding Path=Dictionaries}"
                                   DisplayMemberPath="Name"
                                   SelectedValuePath="Name" 
                                   SelectedItem="{Binding SelectedItem}"/>
+                    </StackPanel>
+                    
+                    <StackPanel Grid.Row="1" Margin="0,10,0,10" HorizontalAlignment="Left">
+                        <Button Content="Add custom dictionary" Width="150" Click="CustomDictionary_Button_Click" />
                     </StackPanel>
                 </Grid>
 
@@ -28,9 +38,9 @@
                                    Description="Select files or folder which you want to correct"
                                    NextPage="{Binding ElementName=LastPage}">
 
-                <StackPanel>
-                    <Button Content="Select files for correction" Click="Button_Click" />
-                    <Button Content="Where should be corrected files saved" Click="Destination_Button_Click" />
+                <StackPanel Margin="10" HorizontalAlignment="Left">
+                    <Button Content="Select files for correction" Width="200" Click="Button_Click" Margin="0,10,0,10" />
+                    <Button Content="Where should be corrected files saved" Width="200" Click="Destination_Button_Click" Margin="0,10,0,10" />
                 </StackPanel>
 
             </xctk:WizardPage>
