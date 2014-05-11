@@ -56,7 +56,7 @@ namespace MPSpell.Correction
 
                 if (error != null && pos == error.GetPosition())
                 {
-                    data += error.CorrectWordWithContext;
+                    data += error.CorrectWord;
                     for (int i = 0; i < error.WrongWord.Length; i++)
                     {
                         pos++;

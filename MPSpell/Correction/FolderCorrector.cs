@@ -146,9 +146,23 @@ namespace MPSpell.Correction
                             task = Task<List<MisspelledWord>>.Factory.StartNew(() =>
                             {
                                 return this.CorrectErrors(errorBatch);
-                            });
+                            });                            
                         }
 
+                    }
+
+                    if (null != task)
+                    {
+                        task.Wait();
+                        List<MisspelledWord> leftover = task.Result;
+                        foreach (MisspelledWord item in leftover)
+                        {
+                            stats.AddCorrection(item);
+                            if (item.CorrectWord != null)
+                            {
+                                handler.Push(item);
+                            }
+                        }
                     }
                 }
 
