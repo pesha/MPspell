@@ -31,6 +31,8 @@ namespace MPSpellCorrector
         public MPSpellCorrector.Class.Container Container { get; private set; }
         private FolderCorrector corrector;
 
+        private BackgroundWorker worker;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -66,15 +68,17 @@ namespace MPSpellCorrector
         }
         
         private void Run_Button_Click(object sender, RoutedEventArgs e)
-        {            
-            BackgroundWorker worker = new BackgroundWorker();
+        {                        
+            worker = new BackgroundWorker();
             worker.WorkerReportsProgress = true;
+            worker.WorkerSupportsCancellation = true;
 
             worker.DoWork += worker_DoWork;
             worker.RunWorkerCompleted += worker_RunWorkerCompleted;
-            worker.ProgressChanged += worker_ProgressChanged;
+            worker.ProgressChanged += worker_ProgressChanged;            
 
             this.RunButton.IsEnabled = false;
+            this.StopButton.IsEnabled = true;
 
             worker.RunWorkerAsync();
         }
@@ -111,6 +115,19 @@ namespace MPSpellCorrector
         {
             DictionaryCreatorWindow window = new DictionaryCreatorWindow();
             window.Show();
+        }
+
+        private void Close_MenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+        }
+
+        private void StopButton_Click(object sender, RoutedEventArgs e)
+        {
+            worker.CancelAsync();
+
+            this.RunButton.IsEnabled = true;
+            this.StopButton.IsEnabled = false;
         }
 
     }

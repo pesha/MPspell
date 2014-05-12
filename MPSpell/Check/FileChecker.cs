@@ -23,7 +23,11 @@ namespace MPSpell.Check
                 return (contextLeft == 0);
             }
         }
+
         private int contextLeft;
+        private long position;
+        private long fileSize;
+        private FileInfo fileInfo;
 
         public FileChecker(string path, Dictionary dictionary, int contextSize = 2)
             : base(dictionary, contextSize)
@@ -34,7 +38,16 @@ namespace MPSpell.Check
 
         private void Init()
         {            
-            reader = EncodingDetector.GetStreamWithEncoding(Path);        
+            reader = EncodingDetector.GetStreamWithEncoding(Path);
+            position = 0;
+            fileInfo = new FileInfo(Path);
+            fileSize = fileInfo.Length;
+        }
+
+        public double EstimateProcess()
+        {
+            double res = (double) position / fileSize;
+            return res > 1 ? 1 : res;
         }
 
         public override MisspelledWord GetNextMisspelling()
@@ -48,8 +61,9 @@ namespace MPSpell.Check
             MisspelledWord misspelling = null;
             char chr;
             while (!reader.EndOfStream)
-            {
-                chr = (char) reader.Read();                
+            {                
+                chr = (char) reader.Read();
+                position++;
                 misspelling = this.tokenizer.HandleChar(chr);
                 if (null != misspelling)
                 {

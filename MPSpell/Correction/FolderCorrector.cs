@@ -35,6 +35,7 @@ namespace MPSpell.Correction
         private int totalFiles;
         private int processedFiles;
         private BackgroundWorker worker;
+        private int estimateLimit;
 
         public FolderCorrector(Dictionary dictionary, string directory, string resultDirectory = null, string summaryDirectory = null)
         {
@@ -66,6 +67,7 @@ namespace MPSpell.Correction
             dictionary.PreloadDictionaries();
             this.totalFiles = this.FilesToProcess.Count;
             this.processedFiles = 0;
+            this.estimateLimit = 10000;
             Stopwatch time = Stopwatch.StartNew();
 
             List<FileInfo>[] filesGroups = this.DivadeIntoGroups(2);
@@ -89,17 +91,18 @@ namespace MPSpell.Correction
             Task.WaitAll(tasks);
 
             time.Stop();
-
-            List<CorrectionStatitic> stats = new List<CorrectionStatitic>();
-            foreach (Task<CorrectionStatitic> task in tasks)
-            {
-                stats.Add(task.Result);
-            }
-
-            CorrectionSummary summary = new CorrectionSummary("all.txt", "corrected.txt", "counts.txt", CorrectionSummary.GetResultFolder());
-            summary.MergeStats(stats);
-
             this.CorrectionTime = time.ElapsedMilliseconds;
+            if (!worker.CancellationPending)
+            {
+                List<CorrectionStatitic> stats = new List<CorrectionStatitic>();
+                foreach (Task<CorrectionStatitic> task in tasks)
+                {
+                    stats.Add(task.Result);
+                }
+
+                CorrectionSummary summary = new CorrectionSummary("all.txt", "corrected.txt", "counts.txt", CorrectionSummary.GetResultFolder());
+                summary.MergeStats(stats);
+            }
         }
 
         private CorrectionStatitic CorrectGroup(List<FileInfo> group, int id)
@@ -116,16 +119,18 @@ namespace MPSpell.Correction
                 {
                     Task<List<MisspelledWord>> task = null;
                     List<MisspelledWord> errors = new List<MisspelledWord>();
+                    int estimates = 0;
                     while (!checker.EndOfCheck)
                     {
                         MisspelledWord error = checker.GetNextMisspelling();
                         if (null != error)
                         {
+                            estimates++;
                             errors.Add(error);                            
                         }
 
                         if (errors.Count > 1000 || checker.EndOfCheck)
-                        {
+                        {                            
                             if (task != null)
                             {
                                 task.Wait();
@@ -149,6 +154,16 @@ namespace MPSpell.Correction
                             });                            
                         }
 
+                        if (estimates > estimateLimit)
+                        {
+                            this.UpdateProgres(0, checker.EstimateProcess());
+                            estimates = 0;
+                        }
+
+                        if (worker.CancellationPending)
+                        {                            
+                            return null;
+                        }
                     }
 
                     if (null != task)
@@ -185,12 +200,16 @@ namespace MPSpell.Correction
             return errors;
         }
 
-        private void UpdateProgres(int files)
+        private void UpdateProgres(int files, double? file = 0)
         {
             lock ("progress")
             {
-                processedFiles += files;
-                worker.ReportProgress((this.processedFiles * 100)/this.totalFiles);
+                if (files > 0)
+                {
+                    processedFiles += files;
+                }
+
+                worker.ReportProgress((int)((this.processedFiles + file) * 100)/this.totalFiles);
             }
         }
 
