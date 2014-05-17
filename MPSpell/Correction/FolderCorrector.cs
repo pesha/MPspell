@@ -18,11 +18,15 @@ namespace MPSpell.Correction
 
         public List<FileInfo> FilesToProcess { get; private set; }
         public long CorrectionTime { get; private set; }
-        public bool PreserveSubfolders { get; set; }        
+        public bool PreserveSubfolders { get; set; }
+        public int ThreadsAvailable { get; private set; }
+        public int ThreadsUsed { get; private set; }
+        public int ProcessedFiles { get; private set; }
+        public int TotalFiles { get; private set; }
+        public string SummaryDirectory { get; private set; }
+        public string ResultDirectory { get; private set; }
 
-        private string directory;
-        private string resultDirectory;
-        private string summaryDirectory;
+        private string directory;        
         private List<string> allowedExtensions = new List<string>() { ".txt", "" };
         private Dictionary dictionary;
         private ILanguageModel languageModel;
@@ -31,18 +35,17 @@ namespace MPSpell.Correction
 
         private Corrector corrector;
 
-        // temporary info
-        private int totalFiles;
-        private int processedFiles;
+        // temporary info        
         private BackgroundWorker worker;
         private int estimateLimit;
+        private List<FileInfo>[] filesGroups;
 
         public FolderCorrector(Dictionary dictionary, string directory, string resultDirectory = null, string summaryDirectory = null)
         {
             this.directory = directory;
-            this.summaryDirectory = summaryDirectory;
+            this.SummaryDirectory = summaryDirectory;
 
-            this.dictionary = dictionary;
+            this.dictionary = dictionary;            
 
             // setup models
             this.languageModel = new LanguageModel(dictionary);
@@ -54,7 +57,11 @@ namespace MPSpell.Correction
 
             // prepare files and folders
             this.FilesToProcess = this.AnalyzeDir(new DirectoryInfo(directory));
-            this.resultDirectory = null != resultDirectory ? resultDirectory : directory;
+            this.ResultDirectory = null != resultDirectory ? resultDirectory : directory;
+
+            this.ThreadsAvailable = this.ScaleThreads();
+            this.filesGroups = this.DivadeIntoGroups(this.ThreadsAvailable);
+            this.ThreadsUsed = this.FilesToProcess.Count > 1 ? filesGroups.Length : 1;
 
             // other settings
             PreserveSubfolders = true;
@@ -64,16 +71,17 @@ namespace MPSpell.Correction
         {
             this.worker = worker;
 
+            this.worker.ReportProgress(0, new ProgressReport(Report.PreloadingDictionary));
             dictionary.PreloadDictionaries();
-            this.totalFiles = this.FilesToProcess.Count;
-            this.processedFiles = 0;
-            this.estimateLimit = 10000;
+
+
+            this.TotalFiles = this.FilesToProcess.Count;
+            this.ProcessedFiles = 0;
+            this.estimateLimit = 10000; // for progress bar
             Stopwatch time = Stopwatch.StartNew();
 
-            List<FileInfo>[] filesGroups = this.DivadeIntoGroups(2);
-            int count = this.FilesToProcess.Count > 1 ? filesGroups.Length : 1;
-
-            Task<CorrectionStatitic>[] tasks = new Task<CorrectionStatitic>[count];
+            this.worker.ReportProgress(0, new ProgressReport(Report.Working));
+            Task<CorrectionStatitic>[] tasks = new Task<CorrectionStatitic>[this.ThreadsUsed];
             int id = 0;
             foreach (List<FileInfo> group in filesGroups)
             {
@@ -100,9 +108,26 @@ namespace MPSpell.Correction
                     stats.Add(task.Result);
                 }
 
+                this.worker.ReportProgress(100, new ProgressReport(Report.PreparingStatistics));
                 CorrectionSummary summary = new CorrectionSummary("all.txt", "corrected.txt", "counts.txt", CorrectionSummary.GetResultFolder());
                 summary.MergeStats(stats);
+                this.worker.ReportProgress(100, new ProgressReport(Report.Done));
             }
+            else
+            {
+                this.worker.ReportProgress(0, new ProgressReport(Report.Canceled));
+            }
+        }
+
+        private int ScaleThreads()
+        {
+            int coreCount = 0;
+            foreach (var item in new System.Management.ManagementObjectSearcher("Select NumberOfCores from Win32_Processor").Get())
+            {
+                coreCount += int.Parse(item["NumberOfCores"].ToString());
+            }
+
+            return coreCount;
         }
 
         private CorrectionStatitic CorrectGroup(List<FileInfo> group, int id)
@@ -111,7 +136,7 @@ namespace MPSpell.Correction
 
             foreach (FileInfo file in group)
             {
-                string output = PreserveSubfolders ? this.GetSubfolder(file) : this.resultDirectory + "/" + file.Name;
+                string output = PreserveSubfolders ? this.GetSubfolder(file) : this.ResultDirectory + "/" + file.Name;
 
                 FileHandler handler = new FileHandler(file.FullName, output);
 
@@ -206,10 +231,10 @@ namespace MPSpell.Correction
             {
                 if (files > 0)
                 {
-                    processedFiles += files;
+                    ProcessedFiles += files;
                 }
 
-                worker.ReportProgress((int)((this.processedFiles + file) * 100)/this.totalFiles);
+                worker.ReportProgress((int)((this.ProcessedFiles + file) * 100)/this.TotalFiles);                
             }
         }
 
@@ -241,7 +266,7 @@ namespace MPSpell.Correction
             string path = info.FullName;
             path = path.Replace(this.directory, "");
 
-            return this.resultDirectory + path;
+            return this.ResultDirectory + path;
         }
 
         private List<FileInfo> AnalyzeDir(DirectoryInfo dir)
@@ -292,10 +317,40 @@ namespace MPSpell.Correction
         // todo resit helperem na verejne casti
         public string GetSizeInMb()
         {
-            return Math.Round((double)FileSize / 1024 / 1024, 2).ToString() + "MB";
+            return Math.Round(((double)FileSize / 1024), 2).ToString() + " kB";
+        }
+
+        public string GetAvgSize()
+        {
+            double count = ((double)FileSize / FileCount) / 1024.0;
+            return Math.Round(count, 2).ToString() + " kB";
         }
 
     }
+
+    public class ProgressReport
+    {
+
+        public Report Report { get; private set; }
+
+        public ProgressReport(Report report)
+        {
+            Report = report;
+        }
+
+    }
+
+    public enum Report
+    {
+        WaitingToStart,
+        PreloadingDictionary,
+        Working,
+        PreparingStatistics,
+        Done,
+        Canceled
+    }
+
+
 
 
 }

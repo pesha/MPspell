@@ -2,13 +2,10 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
-        Title="MPSpellCorrector" Height="387" Width="680">
-
+        Title="MPSpellCorrector" Height="340" Width="680" ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen" Icon="Resources/corrector.ico">
 
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
@@ -46,46 +43,73 @@
             </ToolBar>
         </ToolBarTray>
 
-        <Grid Grid.Row="2">
-            <Grid  Margin="10">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="150" />
-                    <ColumnDefinition Width="150" />
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                </Grid.RowDefinitions>
-
-                <TextBlock Text="Files:" />
-                <TextBlock Grid.Row="1" Text="Total size:" />
-                <TextBlock Grid.Row="2" Text="Running time:" />
-
-                <TextBlock Grid.Column="1" x:Name="FileCount" />
-                <TextBlock Grid.Column="1" Grid.Row="1"  x:Name="FileSize" />
-                <TextBlock Grid.Column="1" Grid.Row="2" x:Name="RunningTime" />
-
-            </Grid>
-        </Grid>
-
-        <Grid Grid.Row="3" Margin="20">
+        <Grid Grid.Row="2" Margin="20">
             <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
-            <StackPanel Margin="0,10,0,10">
-                <ProgressBar x:Name="ProgressBar" HorizontalAlignment="Center" Height="26" VerticalAlignment="Top" Width="624" />
-            </StackPanel>
+            <Grid>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="150" />
+                        <ColumnDefinition Width="150" />
+                        <ColumnDefinition Width="150" />
+                        <ColumnDefinition Width="150" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
 
-            <StackPanel Grid.Row="1" HorizontalAlignment="Right" Orientation="Horizontal">
-                <Button Content="Open result data"  Width="100" Margin="0,0,10,0"/>
-                <Button Content="Open statistics"  Width="100" />
-            </StackPanel>
-        </Grid>
+                    <TextBlock Text="Files count:" />
+                    <TextBlock Grid.Row="1" Text="Total size to process:" />
 
-        <Grid Grid.Row="4">
+                    <TextBlock Grid.Column="1" x:Name="FileCount" />
+                    <TextBlock Grid.Column="1" Grid.Row="1"  x:Name="FileSize" />
+                    
+                    <TextBlock Grid.Column="2" Text="Average file size: " />                            
+                    <TextBlock Grid.Row="1" Grid.Column="2" Text="Threads:" />
+                    
+                    <TextBlock Grid.Column="3" x:Name="AvgFileSize" />
+                    <TextBlock Grid.Row="1" Grid.Column="3" x:Name="ThreadCount" />
+
+                </Grid>
+            </Grid>
+
+            <Grid Grid.Row="1" Margin="0,10,0,10">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Margin="0,10,0,10" Grid.ColumnSpan="2">
+                    <ProgressBar x:Name="ProgressBar" HorizontalAlignment="Center" Height="26" VerticalAlignment="Top" Width="624" />
+                </StackPanel>
+                
+                <TextBlock x:Name="ProgressStatus" Grid.Row="1" VerticalAlignment="Top" />
+
+                <StackPanel Grid.Row="1" Grid.Column="1" HorizontalAlignment="Right" Orientation="Horizontal">
+                    <Button x:Name="ResultDataButton" Content="Open result data" IsEnabled="False"  Width="100" Margin="0,0,10,0" Click="ResultDataButton_Click"/>
+                    <Button x:Name="StatisticsButton" Content="Open statistics" IsEnabled="False" Width="100" Click="StatisticsButton_Click" />
+                </StackPanel>
+            </Grid>
+
+            <Grid x:Name="ReportGrid" Grid.Row="2" Margin="0,10,0,0" > <!--Visibility="Hidden"-->
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                
+                <TextBlock Text="Elapsed time:" />
+                <TextBlock Grid.Column="1" x:Name="RunningTime" />
+            </Grid>
+
 
         </Grid>
 

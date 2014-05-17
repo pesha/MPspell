@@ -57,12 +57,17 @@ namespace MPSpellCorrector
                 }
             }
 
+            project.ReportPath = Container.Settings.ResultFolder;
+
             corrector = new FolderCorrector(project.Dictionary, project.FolderPath, project.DestinationPath);
 
             // todo udelat viewmodel
             FolderAnalyzeResult res = corrector.GetFolderAnalyzeResult();
             this.FileCount.Text = res.FileCount.ToString();
-            this.FileSize.Text = res.GetSizeInMb().ToString();
+            this.FileSize.Text = res.GetSizeInMb();
+            this.AvgFileSize.Text = res.GetAvgSize();
+            this.ThreadCount.Text = corrector.ThreadsUsed.ToString() + " (limit " + corrector.ThreadsAvailable + ")";
+            this.ProgressStatus.Text = Report.WaitingToStart.ToString();
 
             this.RunButton.IsEnabled = true;
         }
@@ -84,14 +89,30 @@ namespace MPSpellCorrector
         }
 
         void worker_ProgressChanged(object sender, ProgressChangedEventArgs e)
-        {
+        {            
             this.ProgressBar.Value = e.ProgressPercentage;
+
+            ProgressReport report = (ProgressReport)e.UserState;
+            if (null != report)
+            {
+                this.ProgressStatus.Text = report.Report.ToString();
+
+                if (report.Report == Report.PreparingStatistics)
+                {
+                    this.ResultDataButton.IsEnabled = true;
+                }
+            }
         }
 
         void worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             long time = corrector.CorrectionTime;
             this.RunningTime.Text = Math.Round((double)time / 1000, 1).ToString() + "sec";
+
+            this.ReportGrid.Visibility = System.Windows.Visibility.Visible;
+            this.ResultDataButton.IsEnabled = true;
+            this.StatisticsButton.IsEnabled = true;
+            this.StopButton.IsEnabled = false;
         }
 
         void worker_DoWork(object sender, DoWorkEventArgs e)
@@ -101,7 +122,7 @@ namespace MPSpellCorrector
 
         private void Settings_MenuItem_Click(object sender, RoutedEventArgs e)
         {
-            SettingsWindow window = new SettingsWindow();
+            SettingsWindow window = new SettingsWindow(this.Container);
             window.Show();
         }
 
@@ -128,6 +149,16 @@ namespace MPSpellCorrector
 
             this.RunButton.IsEnabled = true;
             this.StopButton.IsEnabled = false;
+        }
+
+        private void ResultDataButton_Click(object sender, RoutedEventArgs e)
+        {
+            System.Diagnostics.Process.Start("explorer.exe", "/select," + corrector.ResultDirectory);
+        }
+
+        private void StatisticsButton_Click(object sender, RoutedEventArgs e)
+        {
+            System.Diagnostics.Process.Start("explorer.exe", "/select," + corrector.SummaryDirectory);
         }
 
     }

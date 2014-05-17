@@ -20,6 +20,7 @@ namespace MPSpellCorrector.Class
             set
             {
                 MPSpellCorrector.Properties.Settings.Default.DictionariesFolder = value;
+                MPSpellCorrector.Properties.Settings.Default.Save();
             }
         }
 
@@ -33,6 +34,7 @@ namespace MPSpellCorrector.Class
             set
             {
                 MPSpellCorrector.Properties.Settings.Default.DataFolder = value;
+                MPSpellCorrector.Properties.Settings.Default.Save();
             }
         }
 
@@ -46,6 +48,7 @@ namespace MPSpellCorrector.Class
             set
             {
                 MPSpellCorrector.Properties.Settings.Default.ResultFolder = value;
+                MPSpellCorrector.Properties.Settings.Default.Save();
             }
         }
 

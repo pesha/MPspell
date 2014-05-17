@@ -14,6 +14,8 @@ namespace MPSpellCorrector.Class
         public string FolderPath { get; set; }
         public string DestinationPath { get; set; }
         public string CustomDictionary { get; set; }
+        public string ReportPath { get; set; }
+
 
     }
 }
