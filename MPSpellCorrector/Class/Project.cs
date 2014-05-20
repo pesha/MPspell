@@ -11,10 +11,21 @@ namespace MPSpellCorrector.Class
     {
 
         public Dictionary Dictionary { get; set; }
-        public string FolderPath { get; set; }
-        public string DestinationPath { get; set; }
         public string CustomDictionary { get; set; }
+
+        public string SourcePath { get; set; }
+        public string[] SourceFiles { get; set; }
+        public string DestinationPath { get; set; }
+
+        
         public string ReportPath { get; set; }
+        public bool PreserveSubfolders { get; set; }
+
+
+        public Project()
+        {
+            PreserveSubfolders = true;
+        }
 
 
     }

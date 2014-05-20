@@ -15,6 +15,9 @@ namespace MPSpell.Correction
         public string FileCorrected { get; private set; }
         public string FileSummary { get; private set; }
 
+        public int Corrected { get; private set; }
+        public int Detected { get; private set; }
+
         public CorrectionSummary(string fileAll, string fileCorrected, string fileSummary, string folder = "")
         {
             if (!String.IsNullOrEmpty(folder))
@@ -30,6 +33,9 @@ namespace MPSpell.Correction
             FileAll = folder + fileAll;
             FileCorrected = folder + fileCorrected;
             FileSummary = folder + fileSummary;
+
+            Corrected = 0;
+            Detected = 0;
         }
 
         public void MergeStats(List<CorrectionStatitic> statistics)
@@ -46,6 +52,7 @@ namespace MPSpell.Correction
                     {
                         line = reader.ReadLine();
                         writerAll.WriteLine(line);
+                        Detected++;
                     }
                 }
 
@@ -56,6 +63,7 @@ namespace MPSpell.Correction
                     {
                         line = reader.ReadLine();
                         writerCorrected.WriteLine(line);
+                        Corrected++;
                     }
                 }
             }
@@ -113,8 +121,9 @@ namespace MPSpell.Correction
         public static string GetResultFolder()
         {
             DateTime time = DateTime.Now;
+            string minute = time.Minute < 10 ? "0" + time.Minute.ToString() : time.Minute.ToString();
 
-            return time.Day + "-" + time.Month + "-" + time.Year + " " + time.Hour + "-" + time.Minute;
+            return time.Day + "-" + time.Month + "-" + time.Year + " " + time.Hour + "-" + minute;
         }
 
         class SummaryItem

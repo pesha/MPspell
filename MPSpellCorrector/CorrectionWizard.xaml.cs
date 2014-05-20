@@ -51,8 +51,11 @@ namespace MPSpellCorrector
             DialogResult result = dialog.ShowDialog();
             if (result == System.Windows.Forms.DialogResult.OK)
             {                
-                project.FolderPath = dialog.SelectedPath;
+                project.SourcePath = dialog.SelectedPath;
                 container.Settings.DataFolder = dialog.SelectedPath;
+
+                wizardViewModel.SourceDirectory = project.SourcePath;
+                this.SelectFilesButton.IsEnabled = false;
             }
         }
 
@@ -71,6 +74,7 @@ namespace MPSpellCorrector
             if (result == System.Windows.Forms.DialogResult.OK)
             {
                 project.DestinationPath = dialog.SelectedPath;
+                wizardViewModel.DestinationDirectory = project.DestinationPath;
             }
         }
 
@@ -85,16 +89,55 @@ namespace MPSpellCorrector
 
             if (fileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                try
-                {
-                    project.CustomDictionary = fileDialog.FileName;                    
-                }
-                catch (Exception ex)
-                {
-                    System.Windows.MessageBox.Show("Error: Could not read file from disk.");
-                }
+                project.CustomDictionary = fileDialog.FileName;
+                wizardViewModel.CustomDictionary = project.CustomDictionary;
             }
         }
+
+        private void SelectFilesButton_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog fileDialog = new OpenFileDialog();
+
+            fileDialog.InitialDirectory = @"C:\";
+            fileDialog.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
+            fileDialog.FilterIndex = 2;
+            fileDialog.Multiselect = true;
+            fileDialog.RestoreDirectory = true;
+
+            if (fileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK && fileDialog.FileNames.Length > 0)
+            {
+                project.SourceFiles = fileDialog.FileNames;
+                wizardViewModel.SourceFiles = project.SourceFiles;
+                this.SelectSourceFilesStackPanel.IsEnabled = false;
+                this.PreserveSubfolderCheckBox.IsChecked = false;
+                this.PreserveSubfolderCheckBox.IsEnabled = false;
+            }
+        }
+
+        private void PreserveSubfolderCheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            if (null != wizardViewModel)
+            {
+                wizardViewModel.PreserveSubfolders = true;
+                project.PreserveSubfolders = true;
+            }
+        }
+
+        private void PreserveSubfolderCheckBox_Unchecked(object sender, RoutedEventArgs e)
+        {
+            wizardViewModel.PreserveSubfolders = false;
+            project.PreserveSubfolders = false;
+        }
+
+        private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (null != wizardViewModel.SelectedItem)
+            {
+                this.Page1.CanSelectNextPage = true;
+            }
+        }
+
+
 
     }
 }

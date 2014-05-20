@@ -25,7 +25,7 @@ namespace MPSpellCorrector.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("C:\\dev\\git\\Pspell\\SpellCheckerConsole\\bin\\Debug\\gen")]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string DictionariesFolder {
             get {
                 return ((string)(this["DictionariesFolder"]));
@@ -56,6 +56,30 @@ namespace MPSpellCorrector.Properties {
             }
             set {
                 this["ResultFolder"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ExportContext {
+            get {
+                return ((bool)(this["ExportContext"]));
+            }
+            set {
+                this["ExportContext"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string CustomDictionariesFolder {
+            get {
+                return ((string)(this["CustomDictionariesFolder"]));
+            }
+            set {
+                this["CustomDictionariesFolder"] = value;
             }
         }
     }

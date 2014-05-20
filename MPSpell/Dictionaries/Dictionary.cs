@@ -228,6 +228,8 @@ namespace MPSpell.Dictionaries
                 this.loader.ParseConfusionMatrixes(this);
                 this.loader.ParseFrequences(this);
                 this.loader.ParseNgrams(this);
+
+                this.isDictionaryLoaded = true;
             }
         }
 

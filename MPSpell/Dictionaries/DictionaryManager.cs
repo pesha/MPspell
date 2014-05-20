@@ -14,11 +14,13 @@ namespace MPSpell.Dictionaries
     {
 
         private string dictionaryFolder;
+        private string customDictionaryFolder;
         private List<Dictionary> dictionaryCache = null;
 
-        public DictionaryManager(string dictionaryFolder)
+        public DictionaryManager(string dictionaryFolder, string customDictionaryFolder = null)
         {
             this.dictionaryFolder = dictionaryFolder;
+            this.customDictionaryFolder = customDictionaryFolder;
         }
 
         public List<Dictionary> GetAvailableDictionaries()
@@ -37,6 +39,23 @@ namespace MPSpell.Dictionaries
                         if (file.Name.ToLowerInvariant() == "dictionary.xml")
                         {
                             dictionaryCache.Add(this.GetDictionary(file, info.FullName));
+                        }
+                    }
+                }
+
+                if (null != customDictionaryFolder)
+                {
+                    dictInfo = new DirectoryInfo(this.customDictionaryFolder);
+                    directories = new List<DirectoryInfo>(dictInfo.EnumerateDirectories());
+                    foreach (DirectoryInfo info in directories)
+                    {
+                        List<FileInfo> files = new List<FileInfo>(info.EnumerateFiles());
+                        foreach (FileInfo file in files)
+                        {
+                            if (file.Name.ToLowerInvariant() == "dictionary.xml")
+                            {
+                                dictionaryCache.Add(this.GetDictionary(file, info.FullName));
+                            }
                         }
                     }
                 }

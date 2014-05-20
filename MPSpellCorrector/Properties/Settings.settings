@@ -3,12 +3,18 @@
   <Profiles />
   <Settings>
     <Setting Name="DictionariesFolder" Type="System.String" Scope="User">
-      <Value Profile="(Default)">C:\dev\git\Pspell\SpellCheckerConsole\bin\Debug\gen</Value>
+      <Value Profile="(Default)" />
     </Setting>
     <Setting Name="DataFolder" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
     <Setting Name="ResultFolder" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="ExportContext" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="CustomDictionariesFolder" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
   </Settings>

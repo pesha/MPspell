@@ -41,12 +41,15 @@ namespace MPSpellCorrector
 
         private void New_MenuItem_Click(object sender, RoutedEventArgs e)
         {
+            Container.Project = null;
             CorrectionWizard wizard = new CorrectionWizard(this);
             wizard.ShowDialog();
         }
 
         public void PrepareProject()
         {
+            this.ReportGrid.Visibility = System.Windows.Visibility.Hidden;
+
             Project project = Container.Project;
             if (!String.IsNullOrEmpty(project.CustomDictionary) && File.Exists(project.CustomDictionary))
             {
@@ -57,9 +60,18 @@ namespace MPSpellCorrector
                 }
             }
 
-            project.ReportPath = Container.Settings.ResultFolder;
+            project.ReportPath = Container.Settings.ReportFolder;
+            
+            if (null != project.SourceFiles)
+            {
+                corrector = new FolderCorrector(project.Dictionary, project.SourceFiles, project.DestinationPath, Container.Settings.ReportFolder);
+            }
+            else
+            {
+                corrector = new FolderCorrector(project.Dictionary, project.SourcePath, project.DestinationPath, Container.Settings.ReportFolder, project.PreserveSubfolders);
+            }
 
-            corrector = new FolderCorrector(project.Dictionary, project.FolderPath, project.DestinationPath);
+            corrector.ExportContext = Container.Settings.ExportContext;
 
             // todo udelat viewmodel
             FolderAnalyzeResult res = corrector.GetFolderAnalyzeResult();
@@ -67,7 +79,7 @@ namespace MPSpellCorrector
             this.FileSize.Text = res.GetSizeInMb();
             this.AvgFileSize.Text = res.GetAvgSize();
             this.ThreadCount.Text = corrector.ThreadsUsed.ToString() + " (limit " + corrector.ThreadsAvailable + ")";
-            this.ProgressStatus.Text = Report.WaitingToStart.ToString();
+            this.ProgressStatus.Text = this.ReportToString(Report.WaitingToStart);
 
             this.RunButton.IsEnabled = true;
         }
@@ -95,7 +107,7 @@ namespace MPSpellCorrector
             ProgressReport report = (ProgressReport)e.UserState;
             if (null != report)
             {
-                this.ProgressStatus.Text = report.Report.ToString();
+                this.ProgressStatus.Text = this.ReportToString(report.Report);
 
                 if (report.Report == Report.PreparingStatistics)
                 {
@@ -104,10 +116,27 @@ namespace MPSpellCorrector
             }
         }
 
+        private string ReportToString(Report report)
+        {
+            switch (report)
+            {
+                case Report.Canceled: return "Process canceled";
+                case Report.Done: return "Done";
+                case Report.PreloadingDictionary: return "Loading dictionary";
+                case Report.PreparingStatistics: return "Calculating statistics";
+                case Report.WaitingToStart: return "Waiting";
+                case Report.Working: return "Working"; 
+            }
+
+            return "";
+        }
+
         void worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             long time = corrector.CorrectionTime;
-            this.RunningTime.Text = Math.Round((double)time / 1000, 1).ToString() + "sec";
+            this.RunningTime.Text = Math.Round((double)time / 1000, 1).ToString() + " sec";
+            this.DetectedTextBlock.Text = corrector.Detected.ToString();
+            this.CorrectedTextBlock.Text = corrector.Corrected.ToString();
 
             this.ReportGrid.Visibility = System.Windows.Visibility.Visible;
             this.ResultDataButton.IsEnabled = true;
@@ -158,7 +187,7 @@ namespace MPSpellCorrector
 
         private void StatisticsButton_Click(object sender, RoutedEventArgs e)
         {
-            System.Diagnostics.Process.Start("explorer.exe", "/select," + corrector.SummaryDirectory);
+            System.Diagnostics.Process.Start("explorer.exe", "/select," + corrector.ReportDirectory);
         }
 
     }

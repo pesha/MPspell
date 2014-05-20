@@ -19,7 +19,8 @@ namespace MPSpellCorrector.Class
 
         public Container()
         {
-            dictManager = new DictionaryManager(Settings.DictionariesFolder);
+            Settings.InitSettings();
+            dictManager = new DictionaryManager(Settings.DictionariesFolder, Settings.CustomDictionariesFolder);
         }
 
         public DictionaryManager GetDictionaryManager()

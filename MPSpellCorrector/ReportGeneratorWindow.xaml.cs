@@ -148,6 +148,8 @@ namespace MPSpellCorrector
                 this.LeftContextTextBox.Text = lc;
                 this.RightContextTextBox.Text = rc;                
             }
+
+            this.StepBackButton.IsEnabled = true;
         }
 
         private void NotMistake_Button_Click(object sender, RoutedEventArgs e)

@@ -6,12 +6,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MPSpellCorrector
+namespace MPSpellCorrector.ViewModels
 {
-    public class SettingsViewModel
+    public class SettingsViewModel : ViewModelBase
     {
 
         private MPSpellCorrector.Class.Settings settings;
+
+        private string reportsPath = null;
 
         public SettingsViewModel(MPSpellCorrector.Class.Settings settings)
         {
@@ -22,25 +24,56 @@ namespace MPSpellCorrector
         {
             get
             {
-                return settings.ResultFolder;
+                return settings.ReportFolder;
             }
 
             set
             {
-                settings.ResultFolder = value;                
+                reportsPath = settings.ReportFolder;
+                settings.ReportFolder = value;                
 
                 OnPropertyChanged("ReportsPath");
             }
         }
 
-        private void OnPropertyChanged(string propertyName)
+        public bool ExportContext
         {
-            if (PropertyChanged != null)
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            get
+            {
+                return settings.ExportContext;
+            }
+
+            set
+            {
+                settings.ExportContext = value;
+                OnPropertyChanged("ExportContext");
+            }
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        public string CustomDictionariesPath
+        {
+            get
+            {
+                return settings.CustomDictionariesFolder;
+            }
 
+            set
+            {
+                settings.CustomDictionariesFolder = value;
+                OnPropertyChanged("CustomDictionariesPath");
+            }
+        }
+
+        public void Save()
+        {
+            settings.SaveSettings();
+        }
+
+        public void Cancel()
+        {
+            if (null != reportsPath)
+                ReportsPath = reportsPath;
+        }
 
     }
 }

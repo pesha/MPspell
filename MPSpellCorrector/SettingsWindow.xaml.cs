@@ -1,4 +1,5 @@
 ﻿using MPSpellCorrector.Class;
+using MPSpellCorrector.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -46,7 +47,25 @@ namespace MPSpellCorrector
 
         private void Ok_Button_Click(object sender, RoutedEventArgs e)
         {
+            viewModel.Save();
             this.Close();
         }
+
+        private void Cancel_Button_Click(object sender, RoutedEventArgs e)
+        {
+            viewModel.Cancel();
+            this.Close();
+        }
+
+        private void CustomDictionaries_Button_Click(object sender, RoutedEventArgs e)
+        {
+            var dialog = new FolderBrowserDialog();
+            DialogResult result = dialog.ShowDialog();
+            if (result == System.Windows.Forms.DialogResult.OK)
+            {
+                viewModel.CustomDictionariesPath = dialog.SelectedPath;
+            }
+        }
+
     }
 }

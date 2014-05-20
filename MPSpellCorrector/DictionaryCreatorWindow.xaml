@@ -1,7 +1,7 @@
 ﻿<Window x:Class="MPSpellCorrector.DictionaryCreatorWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Příprava slovníku" Height="344" Width="492" Icon="Resources/corrector.ico">
+        Title="Dictionary creator" Height="305" Width="492" Icon="Resources/corrector.ico" ResizeMode="NoResize">
     <Grid Margin="10">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -12,8 +12,8 @@
 
         <Grid>
             <StackPanel Orientation="Horizontal">
-                <TextBlock Text="Začněte vybráním souboru: " />
-                <Button Content="Soubor" Width="60" Margin="5,0,5,0" Click="File_Button_Click"/>
+                <TextBlock Text="Start with selecting a file (counts.txt): " VerticalAlignment="Center" />
+                <Button Content="..." Width="30" Margin="5,0,5,0" Click="File_Button_Click"/>
             </StackPanel>
         </Grid>
         
@@ -39,9 +39,9 @@
             </StackPanel>
 
             <StackPanel Grid.Row="2" Margin="0,10,0,10" HorizontalAlignment="Left" Orientation="Horizontal">
-                <Button Content="Přeskočit" Width="70" Margin="0,0,10,0" Click="Skip_Button_Click"/>
-                <Button Content="Přidat" Width="60" Margin="0,0,10,0" Click="Add_Button_Click"/>
-                <Button Content="Přidat předchozí" Width="110" Click="AddPrev_Button_Click"/>
+                <Button x:Name="SkipButton" IsEnabled="False" Content="Skip" Width="70" Margin="0,0,10,0" Click="Skip_Button_Click"/>
+                <Button x:Name="AddButton" IsEnabled="False" Content="Add" Width="60" Margin="0,0,10,0" Click="Add_Button_Click"/>
+                <Button x:Name="AddPreviousButton" IsEnabled="False" Content="Add the previous" Width="110" Click="AddPrev_Button_Click"/>
             </StackPanel>
 
             <TextBox x:Name="PrevWord" BorderThickness="0" Grid.Row="3" />
@@ -54,12 +54,12 @@
             </Grid.RowDefinitions>
             
             <StackPanel Orientation="Horizontal" Margin="0,10,0,10">
-                <TextBlock Text="Počet vybraných slov:" />    
+                <TextBlock Text="Number of selected words:" />    
                 <TextBlock x:Name="WordsCount" Margin="10,0,0,0" />
             </StackPanel>
 
             <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,10,0,10">
-                <Button Content="Uložit jako slovník" Click="Save_Button_Click" Width="120" />
+                <Button Content="Save as dictionary" Click="Save_Button_Click" Width="120" x:Name="SaveButton" IsEnabled="False" />
             </StackPanel>
         </Grid>
         

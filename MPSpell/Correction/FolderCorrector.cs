@@ -23,11 +23,19 @@ namespace MPSpell.Correction
         public int ThreadsUsed { get; private set; }
         public int ProcessedFiles { get; private set; }
         public int TotalFiles { get; private set; }
-        public string SummaryDirectory { get; private set; }
-        public string ResultDirectory { get; private set; }
 
-        private string directory;        
-        private List<string> allowedExtensions = new List<string>() { ".txt", "" };
+        public bool ExportContext { get; set; }
+
+        public int Detected { get; private set; }
+        public int Corrected { get; private set; }
+
+
+        public string ReportDirectory { get; private set; }
+        public string ResultDirectory { get; private set; }
+        public string SourceDirectory { get; private set; }
+        public bool OnlySelectedFiles { get; private set; }
+                     
+        private List<string> allowedExtensions = new List<string>() { ".txt", "", ".text" };
         private Dictionary dictionary;
         private ILanguageModel languageModel;
         private IAccentModel accentModel;
@@ -40,12 +48,31 @@ namespace MPSpell.Correction
         private int estimateLimit;
         private List<FileInfo>[] filesGroups;
 
-        public FolderCorrector(Dictionary dictionary, string directory, string resultDirectory = null, string summaryDirectory = null)
+        public FolderCorrector(Dictionary dictionary, string sourceDirectory, string resultDirectory = null, string reportDirectory = null, bool preserveSubfolders = true)
         {
-            this.directory = directory;
-            this.SummaryDirectory = summaryDirectory;
+            this.SourceDirectory = sourceDirectory;
+          
+            // prepare files and folders
+            this.FilesToProcess = this.AnalyzeDir(new DirectoryInfo(sourceDirectory));
 
-            this.dictionary = dictionary;            
+            this.PrepareProject(dictionary, resultDirectory, reportDirectory, preserveSubfolders);
+        }
+
+        public FolderCorrector(Dictionary dictionary, string[] sourceFiles, string resultDirectory = null, string reportDirectory = null)
+        {
+            this.OnlySelectedFiles = true;
+            this.FilesToProcess = this.GetFileInfo(sourceFiles);
+
+            this.PrepareProject(dictionary, resultDirectory, reportDirectory, false);
+        }
+
+        private void PrepareProject(Dictionary dictionary, string resultDirectory, string reportDirectory, bool preserveSubfolders)
+        {
+            this.ExportContext = false;
+            this.ResultDirectory = resultDirectory;
+            this.ReportDirectory = reportDirectory;
+
+            this.dictionary = dictionary;
 
             // setup models
             this.languageModel = new LanguageModel(dictionary);
@@ -55,16 +82,12 @@ namespace MPSpell.Correction
             // setup corrector
             this.corrector = new Corrector(errorModel, languageModel, accentModel);
 
-            // prepare files and folders
-            this.FilesToProcess = this.AnalyzeDir(new DirectoryInfo(directory));
-            this.ResultDirectory = null != resultDirectory ? resultDirectory : directory;
-
             this.ThreadsAvailable = this.ScaleThreads();
             this.filesGroups = this.DivadeIntoGroups(this.ThreadsAvailable);
             this.ThreadsUsed = this.FilesToProcess.Count > 1 ? filesGroups.Length : 1;
 
             // other settings
-            PreserveSubfolders = true;
+            PreserveSubfolders = preserveSubfolders;
         }
 
         public void RunCorrection(BackgroundWorker worker = null)
@@ -109,14 +132,23 @@ namespace MPSpell.Correction
                 }
 
                 this.worker.ReportProgress(100, new ProgressReport(Report.PreparingStatistics));
-                CorrectionSummary summary = new CorrectionSummary("all.txt", "corrected.txt", "counts.txt", CorrectionSummary.GetResultFolder());
+                CorrectionSummary summary = new CorrectionSummary("all.txt", "corrected.txt", "counts.txt", this.GetReportDirectory());
                 summary.MergeStats(stats);
+
+                this.Corrected = summary.Corrected;
+                this.Detected = summary.Detected;
+
                 this.worker.ReportProgress(100, new ProgressReport(Report.Done));
             }
             else
             {
                 this.worker.ReportProgress(0, new ProgressReport(Report.Canceled));
             }
+        }
+
+        private string GetReportDirectory()
+        {
+            return ReportDirectory + "/" +  CorrectionSummary.GetResultFolder();
         }
 
         private int ScaleThreads()
@@ -132,11 +164,16 @@ namespace MPSpell.Correction
 
         private CorrectionStatitic CorrectGroup(List<FileInfo> group, int id)
         {
-            CorrectionStatitic stats = new CorrectionStatitic(null, null, true);
+            CorrectionStatitic stats = new CorrectionStatitic(null, null, this.ExportContext);
 
             foreach (FileInfo file in group)
             {
                 string output = PreserveSubfolders ? this.GetSubfolder(file) : this.ResultDirectory + "/" + file.Name;
+
+                if (file.FullName == new FileInfo(output).FullName)
+                {
+                    output = output + ".1";
+                }
 
                 FileHandler handler = new FileHandler(file.FullName, output);
 
@@ -264,9 +301,24 @@ namespace MPSpell.Correction
         private string GetSubfolder(FileInfo info)
         {
             string path = info.FullName;
-            path = path.Replace(this.directory, "");
+            path = path.Replace(this.SourceDirectory, "");
 
             return this.ResultDirectory + path;
+        }
+
+        private List<FileInfo> GetFileInfo(string[] filesPath)
+        {
+            List<FileInfo> files = new List<FileInfo>();
+            foreach (string file in filesPath)
+            {
+                FileInfo info = new FileInfo(file);
+                if (info.Exists)
+                {
+                    files.Add(info);
+                }
+            }
+
+            return files;
         }
 
         private List<FileInfo> AnalyzeDir(DirectoryInfo dir)

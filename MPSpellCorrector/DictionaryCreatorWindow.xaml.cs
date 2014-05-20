@@ -52,6 +52,11 @@ namespace MPSpellCorrector
                 {
                     reader = EncodingDetector.GetStreamWithEncoding(fileDialog.FileName);
 
+                    this.SaveButton.IsEnabled = true;
+                    this.SkipButton.IsEnabled = true;
+                    this.AddButton.IsEnabled = true;
+                    this.AddPreviousButton.IsEnabled = true;
+
                     this.ShowNext();
                     this.WordsCount.Text = this.dictionary.Count.ToString();
                 }
